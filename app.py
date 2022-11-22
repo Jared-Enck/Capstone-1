@@ -1,7 +1,7 @@
 from flask_cors import CORS
 from flask import Flask, redirect, render_template, request, flash, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db
+from models import db, connect_db, User, Card, MainDecklist, MainDeckCard, EggDecklist, EggDeckCard, SideDecklist, SideDeckCard, Deck
 
 app = Flask(__name__)
 CORS(app)
