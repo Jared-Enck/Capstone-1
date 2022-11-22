@@ -1,5 +1,8 @@
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 
+bcrypt = Bcrypt()
 db = SQLAlchemy()
 
 def connect_db(app):
@@ -34,7 +37,47 @@ class User(db.Model):
                           nullable=False, 
                           default=DEFAULT_IMG_URL)
     
-    
+    @classmethod
+    def register(cls, username, password, email, image_url):
+        """Register user.
+        Hash password and add user to db.
+        """
+
+        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
+
+        if image_url and image_url != '':
+            user = User(
+                username=username,
+                email=email,
+                password=hashed_pwd,
+                image_url=image_url,
+            )
+        else:
+            user = User(
+                username=username,
+                email=email,
+                password=hashed_pwd,
+            )
+
+        db.session.add(user)
+        
+        return user
+
+    @classmethod
+    def authenticate(cls, username, password):
+        """Find user with entered username and password.
+        Returns user obj if username and hashed password match, else returns false.
+        """
+
+        user = cls.query.filter_by(username=username).first()
+
+        if user:
+            is_auth = bcrypt.check_password_hash(user.password, password)
+            if is_auth:
+                return user
+
+        return False
+
     
 ##### Deck relationship models. #####
 
