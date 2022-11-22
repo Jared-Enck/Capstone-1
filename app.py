@@ -16,7 +16,6 @@ toolbar = DebugToolbarExtension(app)
 connect_db(app)
 
 BASE_API_URL_1 = 'https://digimoncard.io/api-public/search.php?'
-BASE_API_URL_2 = 'https://digimoncard.io/api-public/getAllCards.php?sort=name'
 
 @app.route('/')
 def homepage():
