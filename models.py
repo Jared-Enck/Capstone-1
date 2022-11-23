@@ -392,15 +392,15 @@ class Deck(db.Model):
                                       ondelete='cascade'))
 
     main_decklist_id = db.Column(db.Integer, 
-                        db.ForeignKey('main_decklist.id', 
+                        db.ForeignKey('main_decklists.id', 
                                       ondelete='cascade'))
 
     egg_decklist_id = db.Column(db.Integer, 
-                        db.ForeignKey('egg_decklist.id', 
+                        db.ForeignKey('egg_decklists.id', 
                                       ondelete='cascade'))
 
     side_decklist_id = db.Column(db.Integer, 
-                        db.ForeignKey('side_decklist.id', 
+                        db.ForeignKey('side_decklists.id', 
                                       ondelete='cascade'))
     
     def __repr__(self):
