@@ -6,16 +6,12 @@ db.drop_all()
 db.create_all()
 
 def save_all_cards():
-    """"""
+    """Call to API for all cards for series of cards and save them to db."""
 
     resp = requests.get('https://digimoncard.io/api-public/search.php?series=Digimon Card Game')
 
     cards = resp.json()
     
-    print('*****************')
-    print(len(cards))
-    print('*****************')
-
     for card in cards:
         c = Card(name=card['name'],
                 type=card['type'],
