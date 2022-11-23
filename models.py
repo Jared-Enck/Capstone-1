@@ -139,6 +139,9 @@ class Card(db.Model):
     image_url = db.Column(db.Text, 
                           nullable=False)
     
+    def __repr__(self):
+        return f"<Card #{self.id}: {self.name}, {self.color}, {self.cardnumber}>"
+    
     @classmethod
     def decklists(cls, card_id):
         """Get decklists associated with card."""
