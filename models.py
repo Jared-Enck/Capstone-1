@@ -38,9 +38,7 @@ class User(db.Model):
     image_url = db.Column(db.Text, 
                           nullable=False, 
                           default=DEFAULT_IMG_URL)
-    
-    comments = relationship('Comment', backref='users')
-    
+        
     decks = relationship('Deck', backref='users')
     
     def __repr__(self):
@@ -179,9 +177,7 @@ class SharedDeck(db.Model):
                           default=datetime.utcnow())
     
     user = relationship('User', backref='shared_decks')
-    
-    comments = relationship('Comment', backref='shared_decks')
-    
+        
     likes = db.relationship('User',
                             secondary='deck_likes')
     
