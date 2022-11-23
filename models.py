@@ -37,6 +37,9 @@ class User(db.Model):
                           nullable=False, 
                           default=DEFAULT_IMG_URL)
     
+    def __repr__(self):
+        return f"<User #{self.id}: {self.username}, {self.email}>"
+    
     @classmethod
     def register(cls, username, password, email, image_url):
         """Register user.
@@ -290,3 +293,6 @@ class Deck(db.Model):
     side_decklist_id = db.Column(db.Integer, 
                         db.ForeignKey('side_decklist.id', 
                                       ondelete='cascade'))
+    
+    def __repr__(self):
+        return f"<Deck #{self.id}: {self.name}, {self.user_id}>"
