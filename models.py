@@ -39,9 +39,9 @@ class User(db.Model):
                           nullable=False, 
                           default=DEFAULT_IMG_URL)
     
-    comments = relationship('Comment')
+    comments = relationship('Comment', backref='users')
     
-    decks = relationship('Deck')
+    decks = relationship('Deck', backref='users')
     
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
@@ -54,20 +54,12 @@ class User(db.Model):
 
         hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
 
-        if image_url:
-            user = User(
-                username=username,
-                email=email,
-                password=hashed_pwd,
-                image_url=image_url,
-            )
-        else:
-            user = User(
-                username=username,
-                email=email,
-                password=hashed_pwd,
-                image_url=DEFAULT_IMG_URL
-            )
+        user = User(
+            username=username,
+            email=email,
+            password=hashed_pwd,
+            image_url=image_url,
+        )
 
         db.session.add(user)
         
@@ -98,7 +90,7 @@ class User(db.Model):
         return False
 
     def get_id(self):
-        return unicode(self.id)
+        return str(self.id)
 
 class Comment(db.Model):
     """Comment."""
@@ -124,9 +116,9 @@ class Comment(db.Model):
                         ForeignKey('shared_decks.id', 
                                       ondelete='cascade'))
     
-    user = relationship('User')
+    user = relationship('User', backref='comments')
     
-    deck = relationship('SharedDeck')
+    deck = relationship('SharedDeck', backref='comments')
     
     def __repr__(self):
         return f"<Comment #{self.id}: {self.user.username}, {self.timestamp}, {self.content}>"
@@ -186,11 +178,11 @@ class SharedDeck(db.Model):
                           nullable=False, 
                           default=datetime.utcnow())
     
-    user = relationship('User')
+    user = relationship('User', backref='shared_decks')
     
-    comments = relationship('Comment')
+    comments = relationship('Comment', backref='shared_decks')
     
-    likes = relationship('User',
+    likes = db.relationship('User',
                             secondary='deck_likes')
     
     @classmethod
