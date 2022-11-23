@@ -78,6 +78,21 @@ class User(db.Model):
 
         return False
 
+class Comment(db.Model):
+    """Comment."""
+    
+    __tablename__ = 'comments'
+    
+    id = db.Column(db.Integer, 
+                   primary_key=True, 
+                   autoincrement=True)
+    
+    content = db.Column(db.String(200), 
+                        nullable=False)
+    
+    timestamp = db.Column(db.DateTime, 
+                          nullable=False, 
+                          default=datetime.utcnow())
     
 ##### Deck relationship models. #####
 
@@ -89,12 +104,40 @@ class Card(db.Model):
     id = db.Column(db.Integer, 
                    primary_key=True, 
                    autoincrement=True)
-    
     name = db.Column(db.Text, 
                      nullable=False)
-    
-    number = db.Column(db.Text, 
+    type = db.Column(db.Text, 
                      nullable=False)
+    color = db.Column(db.Text, 
+                      nullable=False)
+    stage = db.Column(db.Text, 
+                      nullable=True)
+    digi_type = db.Column(db.Text, 
+                          nullable=True)
+    attribute = db.Column(db.Text, 
+                          nullable=True)
+    level = db.Column(db.Text, 
+                      nullable=True)
+    play_cost = db.Column(db.Integer, 
+                          nullable=True)
+    evolution_cost = db.Column(db.Text, 
+                               nullable=True)
+    cardrarity = db.Column(db.Text, 
+                           nullable=True)
+    artist = db.Column(db.Text, 
+                       nullable=True)
+    dp = db.Column(db.Text, 
+                   nullable=True)
+    cardnumber = db.Column(db.Text, 
+                           nullable=False)
+    maineffect = db.Column(db.Text, 
+                           nullable=True)
+    soureeffect = db.Column(db.Text, 
+                            nullable=True)
+    set_name = db.Column(db.Text, 
+                         nullable=False)
+    image_url = db.Column(db.Text, 
+                          nullable=False)
     
     @classmethod
     def decklists(cls, card_id):
