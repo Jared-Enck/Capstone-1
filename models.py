@@ -37,6 +37,10 @@ class User(db.Model):
                           nullable=False, 
                           default=DEFAULT_IMG_URL)
     
+    comments = db.relationship('Comment')
+    
+    decks = db.relationship('Deck')
+    
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
     
@@ -48,7 +52,7 @@ class User(db.Model):
 
         hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
 
-        if image_url and image_url != '':
+        if image_url:
             user = User(
                 username=username,
                 email=email,
@@ -60,6 +64,7 @@ class User(db.Model):
                 username=username,
                 email=email,
                 password=hashed_pwd,
+                image_url=DEFAULT_IMG_URL
             )
 
         db.session.add(user)
@@ -90,12 +95,116 @@ class Comment(db.Model):
                    primary_key=True, 
                    autoincrement=True)
     
-    content = db.Column(db.String(200), 
-                        nullable=False)
+    user_id = db.Column(db.Integer, 
+                        db.ForeignKey('users.id', 
+                                      ondelete='cascade'))
     
     timestamp = db.Column(db.DateTime, 
                           nullable=False, 
                           default=datetime.utcnow())
+    
+    content = db.Column(db.String(200), 
+                        nullable=False)
+    
+    shared_deck_id = db.Column(db.Integer, 
+                        db.ForeignKey('shared_decks.id', 
+                                      ondelete='cascade'))
+    
+    user = db.relationship('User')
+    
+    deck = db.relationship('SharedDeck')
+    
+    def __repr__(self):
+        return f"<Comment #{self.id}: {self.user.username}, {self.timestamp}, {self.content}>"
+    
+class CommentLikes(db.Model):
+    """Mapping user likes to comments."""
+    
+    __tablename__ = 'comment_likes'
+    
+    id = db.Column(db.Integer, 
+                   primary_key=True, 
+                   autoincrement=True)
+    
+    comment_id = db.Column(db.Integer, 
+                        db.ForeignKey('comments.id', 
+                                      ondelete='cascade'))
+    
+    user_id = db.Column(db.Integer, 
+                        db.ForeignKey('users.id', 
+                                      ondelete='cascade'))
+    
+class UserComment(db.Model):
+    """User comments."""
+    
+    __tablename__ = 'user_comments'
+    
+    id = db.Column(db.Integer, 
+                   primary_key=True, 
+                   autoincrement=True)
+    
+    comment_id = db.Column(db.Integer, 
+                        db.ForeignKey('comments.id', 
+                                      ondelete='cascade'))
+    
+    user_id = db.Column(db.Integer, 
+                        db.ForeignKey('users.id', 
+                                      ondelete='cascade'))
+    
+class SharedDeck(db.Model):
+    """Deck shared with others by user."""
+    
+    __tablename__ = 'shared_decks'
+    
+    id = db.Column(db.Integer, 
+                   primary_key=True, 
+                   autoincrement=True)
+    
+    deck_id = db.Column(db.Integer, 
+                        db.ForeignKey('decks.id', 
+                                      ondelete='cascade'))
+    
+    user_id = db.Column(db.Integer, 
+                        db.ForeignKey('users.id', 
+                                      ondelete='cascade'))
+    
+    timestamp = db.Column(db.DateTime, 
+                          nullable=False, 
+                          default=datetime.utcnow())
+    
+    user = db.relationship('User')
+    
+    comments = db.relationship('Comment')
+    
+    likes = db.relationship('User',
+                            secondary='deck_likes')
+    
+    @classmethod
+    def get_deck_comments(cls, shared_deck_id):
+        """Get all comments for the shared deck."""
+        
+        comments = db.session.query(Comment).filter(
+                Comment.shared_deck_id == shared_deck_id
+            ).all()
+        
+        return comments
+    
+class DeckLikes(db.Model):
+    """Mapping user likes to shared decks."""
+    
+    __tablename__ = 'deck_likes'
+    
+    id = db.Column(db.Integer, 
+                   primary_key=True, 
+                   autoincrement=True)
+    
+    shared_deck_id = db.Column(db.Integer, 
+                        db.ForeignKey('shared_decks.id', 
+                                      ondelete='cascade'))
+    
+    user_id = db.Column(db.Integer, 
+                        db.ForeignKey('users.id', 
+                                      ondelete='cascade'))
     
 ##### Deck relationship models. #####
 
@@ -158,7 +267,7 @@ class Card(db.Model):
 class MainDecklist(db.Model):
     """Main decklist."""
     
-    __tablename__ = 'main_decklist'
+    __tablename__ = 'main_decklists'
     
     id = db.Column(db.Integer, 
                    primary_key=True, 
@@ -185,7 +294,7 @@ class MainDeckCard(db.Model):
                    autoincrement=True)
     
     main_decklist_id = db.Column(db.Integer, 
-                             db.ForeignKey('main_decklist.id', 
+                             db.ForeignKey('main_decklists.id', 
                              ondelete='cascade'))
     
     m_card_id = db.Column(db.Integer, 
@@ -195,7 +304,7 @@ class MainDeckCard(db.Model):
 class EggDecklist(db.Model):
     """Egg decklist."""
     
-    __tablename__ = 'egg_decklist'
+    __tablename__ = 'egg_decklists'
     
     id = db.Column(db.Integer, 
                    primary_key=True, 
@@ -222,7 +331,7 @@ class EggDeckCard(db.Model):
                    autoincrement=True)
     
     egg_decklist_id = db.Column(db.Integer, 
-                             db.ForeignKey('egg_decklist.id', 
+                             db.ForeignKey('egg_decklists.id', 
                              ondelete='cascade'))
     
     e_card_id = db.Column(db.Integer, 
@@ -232,7 +341,7 @@ class EggDeckCard(db.Model):
 class SideDecklist(db.Model):
     """Side decklist."""
     
-    __tablename__ = 'side_decklist'
+    __tablename__ = 'side_decklists'
     
     id = db.Column(db.Integer, 
                    primary_key=True, 
@@ -259,7 +368,7 @@ class SideDeckCard(db.Model):
                    autoincrement=True)
     
     side_decklist_id = db.Column(db.Integer, 
-                             db.ForeignKey('side_decklist.id', 
+                             db.ForeignKey('side_decklists.id', 
                              ondelete='cascade'))
     
     e_card_id = db.Column(db.Integer, 
