@@ -6,7 +6,7 @@ db.drop_all()
 db.create_all()
 
 def save_all_cards():
-    """Call to API for all cards for series of cards and save them to db."""
+    """Call to API for all cards in series Digimon Card Game and save them to db."""
 
     resp = requests.get('https://digimoncard.io/api-public/search.php?series=Digimon Card Game')
 
