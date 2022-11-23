@@ -9,7 +9,7 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///digimon_tcg_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
-app.config['SECRET_KEY'] = 'ayyfirstcapstonewoo!4242'
+app.config['SECRET_KEY'] = '3f44cd49d69e821aa140f13a49f432b073e311a264583ab7ed4340b714da0db8'
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 toolbar = DebugToolbarExtension(app)
 
