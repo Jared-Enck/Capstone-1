@@ -1,7 +1,9 @@
 from flask_cors import CORS
-from flask import Flask, redirect, render_template, request, flash, jsonify
+from flask import Flask, redirect, render_template, request, flash, jsonify, url_for
+from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Card, MainDecklist, MainDeckCard, EggDecklist, EggDeckCard, SideDecklist, SideDeckCard, Deck
+from forms import RegisterForm, LoginForm
 
 app = Flask(__name__)
 CORS(app)
@@ -15,10 +17,73 @@ toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 BASE_API_URL_1 = 'https://digimoncard.io/api-public/search.php?'
+
+login_manager.login_view = 'users.login'
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter(User.id == int(user_id)).first()
 
 @app.route('/')
 def homepage():
     """Show homepage."""
     
     return render_template('index.html')
+
+############################
+######## User views ########
+
+@app.route('/register', methods=['GET','POST'])
+def register():
+    """Register user info if form validated, or display register form."""
+    
+    form = RegisterForm()
+    
+    if request.method == 'POST':
+        if form.validate():
+            user = User.register(
+                    username=form.username.data,
+                    password=form.password.data,
+                    email=form.email.data,
+                    image_url=form.image_url.data or User.image_url.default.arg
+                    )
+            
+            login_user(user)
+            
+            flash('Successfully created your account!','success')
+            
+            return redirect(url_for('homepage'))
+    
+    return render_template('/User/register.html', form=form)        
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    """Log in User, add to session."""
+    
+    form = LoginForm()
+    
+    if request.method == 'POST':
+        if form.validate:
+            user =User.authenticate(form.username.data,
+                                    form.password.data)
+            if user:
+                login_user(user)
+                flash(f'Welcome back {user.username}!', 'info')
+                
+                return redirect(url_for('homepage'))
+    
+    return render_template('/User/login.html', form=form)
+                   
+@app.route('/logout', methods=['POST'])
+@login_required
+def logout():
+    """Log out User, remove from session."""
+    
+    logout_user()
+    
+    flash('You have been logged out.', 'info')
+    
+    return redirect(url_for('homepage'))
