@@ -28,14 +28,13 @@ class User(db.Model):
                          nullable=False, 
                          unique=True)
     
-    password = db.Column(db.Text, 
+    password = db.Column(db.String(), 
                          nullable=False)
     
-    email = db.Column(db.Text, 
-                      nullable=False, 
+    email = db.Column(db.String(), 
                       unique=True)
     
-    image_url = db.Column(db.Text, 
+    image_url = db.Column(db.String, 
                           nullable=False, 
                           default=DEFAULT_IMG_URL)
         
@@ -56,10 +55,11 @@ class User(db.Model):
             username=username,
             email=email,
             password=hashed_pwd,
-            image_url=image_url,
+            image_url=image_url
         )
 
         db.session.add(user)
+        db.session.commit()
         
         return user
 
