@@ -3,5 +3,6 @@
 {% block title %}Homepage{% endblock %}
 
 {% block content %}
+<a href="{{ url_for('logout') }}" methods="POST">logout</a>
 <h1>Welcome</h1>
 {% endblock %}
