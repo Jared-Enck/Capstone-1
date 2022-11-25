@@ -11,7 +11,7 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
     
-DEFAULT_IMG_URL = 'https://avatarfiles.alphacoders.com/106/106855.gif'
+DEFAULT_IMG_URL = '/static/digi_avatars/blank-digivice.gif'
 
 ##### User relationship models. #####
 
