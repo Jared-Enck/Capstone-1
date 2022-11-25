@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#logo {
+    height: 3em;
+    width: 3em;
+}
+
+.navbar {
+    background-color: rgb(40, 94, 255);
+    height: 4em;
+    padding-left: 5vw;
+    padding-right: 5vw;
+    border-bottom: .2em solid rgba(0, 0, 0, 0.3);
+}
+
+.navbar a {
+    color: #d7dee2;
+    font-size: 16px;
+    font-weight: bold;
+}
