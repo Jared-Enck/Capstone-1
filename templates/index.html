@@ -3,6 +3,12 @@
 {% block title %}Homepage{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('logout') }}" methods="POST">logout</a>
-<h1>Welcome</h1>
+
+{% if current_user.is_authenticated %}
+    <a href="{{ url_for('logout') }}">logout</a>
+{% endif %}
+
+<h1>Recent Decks</h1>
+
+<h2>Starter Decks</h2>
 {% endblock %}
