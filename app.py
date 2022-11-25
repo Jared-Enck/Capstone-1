@@ -1,5 +1,5 @@
 from flask_cors import CORS
-from flask import Flask, redirect, render_template, request, flash, jsonify, url_for
+from flask import Flask, redirect, render_template, request, flash, jsonify, url_for, abort
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Card, MainDecklist, MainDeckCard, EggDecklist, EggDeckCard, SideDecklist, SideDeckCard, Deck
@@ -9,6 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///digimon_tcg_db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = '3f44cd49d69e821aa140f13a49f432b073e311a264583ab7ed4340b714da0db8'
@@ -47,15 +48,14 @@ def register():
             user = User.register(
                     username=form.username.data,
                     password=form.password.data,
-                    email=form.email.data,
-                    image_url=form.image_url.data or User.image_url.default.arg
-                    )
+                    email=form.email.data)
             
             login_user(user)
             
             flash('Successfully created your account!','success')
             
             return redirect(url_for('homepage'))
+        
     
     return render_template('/User/register.html', form=form)        
 
@@ -67,17 +67,19 @@ def login():
     
     if request.method == 'POST':
         if form.validate:
-            user =User.authenticate(form.username.data,
+            user = User.authenticate(form.username.data,
                                     form.password.data)
             if user:
                 login_user(user)
                 flash(f'Welcome back {user.username}!', 'info')
                 
                 return redirect(url_for('homepage'))
-    
+            
+            flash("Invalid credentials.", 'danger')
+            
     return render_template('/User/login.html', form=form)
                    
-@app.route('/logout', methods=['POST'])
+@app.route('/logout')
 @login_required
 def logout():
     """Log out User, remove from session."""
