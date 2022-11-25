@@ -11,7 +11,7 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
     
-DEFAULT_IMG_URL = ''
+DEFAULT_IMG_URL = 'https://avatarfiles.alphacoders.com/106/106855.gif'
 
 ##### User relationship models. #####
 
@@ -32,10 +32,11 @@ class User(db.Model):
                          nullable=False)
     
     email = db.Column(db.String(), 
+                      nullable=False,
                       unique=True)
     
-    image_url = db.Column(db.String, 
-                          nullable=False, 
+    avatar = db.Column(db.String, 
+                          nullable=True, 
                           default=DEFAULT_IMG_URL)
         
     decks = relationship('Deck', backref='users')
@@ -44,7 +45,7 @@ class User(db.Model):
         return f"<User #{self.id}: {self.username}, {self.email}>"
     
     @classmethod
-    def register(cls, username, password, email, image_url):
+    def register(cls, username, password, email):
         """Register user.
         Hash password and add user to db.
         """
@@ -53,9 +54,9 @@ class User(db.Model):
 
         user = User(
             username=username,
-            email=email,
             password=hashed_pwd,
-            image_url=image_url
+            email=email,
+            avatar=DEFAULT_IMG_URL
         )
 
         db.session.add(user)
