@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
+from flask_login import UserMixin
 from sqlalchemy.orm import relationship
 from flask_bcrypt import Bcrypt
 
@@ -15,7 +16,7 @@ DEFAULT_IMG_URL = '/static/digi_avatars/blank-digivice.gif'
 
 ##### User relationship models. #####
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     """User."""
     
     __tablename__ = 'users'
@@ -45,17 +46,17 @@ class User(db.Model):
         return f"<User #{self.id}: {self.username}, {self.email}>"
     
     @classmethod
-    def register(cls, username, password, email):
+    def register(cls, form):
         """Register user.
         Hash password and add user to db.
         """
 
-        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
+        hashed_pwd = bcrypt.generate_password_hash(form['password']).decode('UTF-8')
 
         user = User(
-            username=username,
+            username=form['username'],
             password=hashed_pwd,
-            email=email,
+            email=form['email'],
             avatar=DEFAULT_IMG_URL
         )
 
@@ -78,18 +79,6 @@ class User(db.Model):
                 return user
 
         return False
-    
-    def is_authenticated(self):
-        return True
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return str(self.id)
 
 class Comment(db.Model):
     """Comment."""
