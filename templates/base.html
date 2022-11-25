@@ -9,7 +9,7 @@
     <title>{% block title%}DCG-Tamer{% endblock%}</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand">
+    <nav class="navbar navbar-expand-lg mb-4">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a href="/" class="navbar-brand">
@@ -19,7 +19,7 @@
             </div>
             <ul class="nav navbar-nav navbar-right">
                 {% if request.endpoint != None %}
-                <li>
+                <li class="nav-item">
                 <form class="navbar-form navbar-right" action="/cards">
                     <input name="q" class="form-control" placeholder="Search Cards" id="search">
                     <button class="btn btn-default">
@@ -28,16 +28,16 @@
                 </form>
                 </li>
                 {% endif %}
-                {% if not current_user %}
-                <li><a href="/register">Register</a></li>
-                <li><a href="/login">Log in</a></li>
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="/users/{{ current_user.id }}">
+                            <img src="{{ current_user.avatar }}" alt="{{ current_user.username }}" id="avatar">
+                        </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
                 {% else %}
-                <li>
-                <a href="/users/{{ current_user.id }}">
-                    <img src="{{ current_user.avater }}" alt="{{ current_user.username }}">
-                </a>
-                </li>
-                <li><a href="/logout">Log out</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/login">Log in</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -51,6 +51,8 @@
     </div>
 {% endif %}
 {% endwith %}
+
+{% block head %}{% endblock %}
 
 {% block content %}
 {% endblock %}
