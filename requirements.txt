@@ -45,5 +45,4 @@ validators==0.20.0
 wcwidth==0.2.5
 Werkzeug==2.2.2
 WTForms==3.0.1
-WTForms-Alchemy==0.18.0
 WTForms-Components==0.10.5
