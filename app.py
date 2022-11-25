@@ -84,3 +84,12 @@ def logout():
     flash('You have been logged out.', 'info')
     
     return redirect(url_for('homepage'))
+
+@app.route('/users/<int:user_id>')
+@login_required
+def user_details(user_id):
+    """Show user details page."""
+    
+    user = User.query.get_or_404(user_id)
+    
+    return render_template('/User/detail.html', user=user)
