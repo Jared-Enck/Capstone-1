@@ -3,6 +3,8 @@ body {
     padding: 0;
 }
 
+/* ######## navbar ######## */
+
 #logo {
     height: 3em;
     width: 3em;
@@ -10,19 +12,21 @@ body {
 
 .navbar {
     background-color: rgb(40, 94, 255);
-    height: 4em;
-    padding-left: 5vw;
-    padding-right: 5vw;
     /* border-bottom: .2em solid rgba(0, 0, 0, 0.3); */
 }
 
-.navbar a {
+.nav-link {
     color: #d7dee2;
     font-size: 16px;
     font-weight: bold;
-    text-decoration: none;
 }
 
-.navbar a:hover {
+.nav-link:hover {
     text-decoration: underline;
+    color: rgb(255, 140, 0)
+}
+
+#avatar {
+    height: 2.5em;
+    width: 2.5em;
 }
