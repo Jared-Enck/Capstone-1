@@ -23,7 +23,6 @@ login_manager.init_app(app)
 
 BASE_API_URL_1 = 'https://digimoncard.io/api-public/search.php?'
 
-login_manager.login_view = 'users.login'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter(User.id == int(user_id)).first()
@@ -43,18 +42,14 @@ def register():
     
     form = RegisterForm()
     
-    if request.method == 'POST':
-        if form.validate():
-            user = User.register(
-                    username=form.username.data,
-                    password=form.password.data,
-                    email=form.email.data)
-            
-            login_user(user)
-            
-            flash('Successfully created your account!','success')
-            
-            return redirect(url_for('homepage'))
+    if form.validate_on_submit():
+        user = User.register(form.data)
+        
+        login_user(user)
+        
+        flash('Successfully created your account!','success')
+        
+        return redirect(url_for('homepage'))
         
     
     return render_template('/User/register.html', form=form)        
