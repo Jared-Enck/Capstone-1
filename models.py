@@ -4,6 +4,7 @@ from sqlalchemy import ForeignKey
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship
 from flask_bcrypt import Bcrypt
+from operator import attrgetter
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -171,6 +172,8 @@ class SharedDeck(db.Model):
     likes = db.relationship('User',
                             secondary='deck_likes')
     
+    deck = relationship('Deck', backref='shared_decks')
+    
     @classmethod
     def get_deck_comments(cls, shared_deck_id):
         """Get all comments for the shared deck."""
@@ -275,6 +278,16 @@ class MainDecklist(db.Model):
             ).all()
         
         return m_cards
+    
+    @classmethod
+    def highest_dp_card_img(cls, main_cards):
+        """Get highest dp card in main cards."""
+        
+        dp_sorted_cards = [card for card in main_cards if card.type == 'Digimon']
+        
+        hdp_card = max(dp_sorted_cards, key=attrgetter('dp'))
+        
+        return hdp_card.image_url
         
 class MainDeckCard(db.Model):
     """Card assigned to a main deck id."""
