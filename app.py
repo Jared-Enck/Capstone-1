@@ -2,7 +2,7 @@ from flask_cors import CORS
 from flask import Flask, redirect, render_template, request, flash, jsonify, url_for, abort
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Card, MainDecklist, MainDeckCard, EggDecklist, EggDeckCard, SideDecklist, SideDeckCard, Deck
+from models import db, connect_db, User, Card, MainDecklist, MainDeckCard, EggDecklist, EggDeckCard, SideDecklist, SideDeckCard, Deck, SharedDeck
 from forms import RegisterForm, LoginForm
 
 app = Flask(__name__)
@@ -27,11 +27,17 @@ BASE_API_URL_1 = 'https://digimoncard.io/api-public/search.php?'
 def load_user(user_id):
     return User.query.filter(User.id == int(user_id)).first()
 
+app.jinja_env.globals.update(main_cards=MainDecklist.main_cards)
+app.jinja_env.globals.update(highest_dp_card_img=MainDecklist.highest_dp_card_img)
+app.jinja_env.globals.update(get_deck_comments=SharedDeck.get_deck_comments)
+
 @app.route('/')
 def homepage():
     """Show homepage."""
     
-    return render_template('index.html')
+    shared_decks = SharedDeck.query.order_by(SharedDeck.timestamp.desc()).limit(10).all()
+    
+    return render_template('index.html', shared_decks=shared_decks)
 
 ############################
 ######## User views ########
