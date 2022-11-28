@@ -6,6 +6,44 @@
 
 {% block content %}
 
+<div class="shared_decks_container">
+    {% for sh_deck in shared_decks %}
+    <div class="card text-white bg-dark decks">
+        <img class="card-img-top" src="{{highest_dp_card_img(main_cards(sh_deck.deck.main_decklist_id))}}" alt=""
+        style="height: 7em;">
+        <div class="card-body" style="height: 5em;">
+            <h5 class="card-title">
+                {{ sh_deck.deck.name }}
+            </h5>
+            <ul class="shared_deck-stats nav nav-pills">
+                <li class="stat mr-3">
+                    <i class="fa-regular fa-thumbs-up"></i>
+                    <span>
+                        {{ sh_deck.likes | length }}
+                    </span>
+                </li>
+                <li class="stat">
+                    <i class="fa-regular fa-comment"></i>
+                    <span>
+                        {{ get_deck_comments(sh_deck.id) | length }}
+                    </span>
+                </li>
+                <li class="stat">
+                    <span>
+                       <i>by {{ sh_deck.user.username }}</i>
+                    </span>
+                </li>
+                <li class="stat">
+                    <span>
+                       on {{ sh_deck.timestamp }}
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
 {% if current_user.is_authenticated %}
 
 {% endif %}
