@@ -41,7 +41,11 @@ class User(db.Model, UserMixin):
                           nullable=True, 
                           default=DEFAULT_IMG_URL)
         
-    decks = relationship('Deck', backref='users')
+    decks = relationship('Deck', 
+                         secondary='user_decks')
+    
+    comments = relationship('Comment', 
+                            secondary='user_comments')
     
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
@@ -104,9 +108,7 @@ class Comment(db.Model):
     shared_deck_id = db.Column(db.Integer, 
                         ForeignKey('shared_decks.id', 
                                       ondelete='cascade'))
-    
-    user = relationship('User', backref='comments')
-    
+        
     deck = relationship('SharedDeck', backref='comments')
     
     def __repr__(self):
@@ -410,3 +412,20 @@ class Deck(db.Model):
     
     def __repr__(self):
         return f"<Deck #{self.id}: {self.name}, {self.user_id}>"
+    
+class UserDeck(db.Model):
+    """User decks."""
+    
+    __tablename__ = 'user_decks'
+    
+    id = db.Column(db.Integer, 
+                   primary_key=True, 
+                   autoincrement=True)
+    
+    deck_id = db.Column(db.Integer, 
+                        ForeignKey('decks.id', 
+                                      ondelete='cascade'))
+    
+    user_id = db.Column(db.Integer, 
+                        ForeignKey('users.id', 
+                                      ondelete='cascade'))

@@ -1,5 +1,5 @@
 from flask_cors import CORS
-from flask import Flask, redirect, render_template, request, flash, jsonify, url_for, abort
+from flask import Flask, redirect, render_template, request, flash, jsonify, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Card, MainDecklist, MainDeckCard, EggDecklist, EggDeckCard, SideDecklist, SideDeckCard, Deck, SharedDeck
@@ -26,6 +26,14 @@ BASE_API_URL_1 = 'https://digimoncard.io/api-public/search.php?'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter(User.id == int(user_id)).first()
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash('Please login first.', 'danger')
+    
+    return redirect(url_for('login'))
+
+login_manager.login_view = 'login'
 
 app.jinja_env.globals.update(main_cards=MainDecklist.main_cards)
 app.jinja_env.globals.update(highest_dp_card_img=MainDecklist.highest_dp_card_img)
@@ -71,7 +79,7 @@ def login():
             user = User.authenticate(form.username.data,
                                     form.password.data)
             if user:
-                login_user(user)
+                login_user(user, remember=True)
                 flash(f'Welcome back {user.username}!', 'info')
                 
                 return redirect(url_for('homepage'))
@@ -97,5 +105,5 @@ def user_details(user_id):
     """Show user details page."""
     
     user = User.query.get_or_404(user_id)
-    
+
     return render_template('/User/detail.html', user=user)
