@@ -3,7 +3,7 @@ from flask import Flask, redirect, render_template, request, flash, jsonify, url
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Card, MainDecklist, MainDeckCard, EggDecklist, EggDeckCard, SideDecklist, SideDeckCard, Deck, SharedDeck
-from forms import RegisterForm, LoginForm
+from forms import RegisterForm, LoginForm, AdvancedSearchForm
 
 app = Flask(__name__)
 CORS(app)
@@ -21,8 +21,6 @@ connect_db(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-BASE_API_URL_1 = 'https://digimoncard.io/api-public/search.php?'
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter(User.id == int(user_id)).first()
@@ -39,7 +37,7 @@ app.jinja_env.globals.update(main_cards=MainDecklist.main_cards)
 app.jinja_env.globals.update(highest_dp_card_img=MainDecklist.highest_dp_card_img)
 app.jinja_env.globals.update(get_deck_comments=SharedDeck.get_deck_comments)
 
-@app.route('/')
+@app.route('/', methods=['GET','POST'])
 def homepage():
     """Show homepage."""
     
@@ -107,3 +105,22 @@ def user_details(user_id):
     user = User.query.get_or_404(user_id)
 
     return render_template('/User/detail.html', user=user)
+
+##############################
+######## Search views ########
+
+
+
+
+
+
+##############################
+######## Card views ########
+
+@app.route('/cards/<number>')
+def show_card(number):
+    """Show card details."""
+    
+    card = Card.query.filter(Card.cardnumber == number).first()
+    
+    return render_template('/Card/show_details.html', card=card)
