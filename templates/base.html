@@ -19,16 +19,14 @@
                 </a>
             </div>
             <ul class="nav navbar-nav navbar-right">
-                {% if request.endpoint != None %}
                 <li class="nav-item">
-                <form class="navbar-form navbar-right" action="/cards">
-                    <input name="q" class="form-control" placeholder="Search Cards" id="search">
-                    <button class="btn btn-default">
+                <form id="search_form" class="navbar-form navbar-right">
+                    <input id="search" name="n" class="form-control" placeholder="Search cards by name" id="search">
+                    <button class="btn btn-default" type="submit">
                     <span class="fa fa-search"></span>
                     </button>
                 </form>
                 </li>
-                {% endif %}
                 {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a href="{{ url_for('user_details', user_id=current_user.id) }}">
@@ -66,5 +64,6 @@
         integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
         crossorigin="anonymous">
     </script>
+    <script src="/static/app.js"></script>
 </body>
 </html>
