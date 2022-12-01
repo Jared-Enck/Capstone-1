@@ -109,7 +109,11 @@ def user_details(user_id):
 ##############################
 ######## Search views ########
 
-
+@app.route('/adv_search')
+def show_adv_search():
+    """Show adv search page."""
+    
+    return render_template('/Search/adv_search.html')
 
 
 
@@ -123,4 +127,4 @@ def show_card(number):
     
     card = Card.query.filter(Card.cardnumber == number).first()
     
-    return render_template('/Card/show_details.html', card=card)
+    return render_template('/Card/card_details.html', card=card)

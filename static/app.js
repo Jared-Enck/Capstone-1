@@ -1,32 +1,57 @@
 const BASE_API_URL = 'https://digimoncard.io/api-public/search.php?'
 
-$('#search_form').on('submit',(e)=>{
-    e.preventDefault();
-    $('#list-cards').empty()
-    let params =`n=${$('#search').val()}`;
-    $('#search').val('')
-    getSearchResults(params);
+$('.nav-item').on('click','#search-button',(e)=>{
+    $('.search-window').remove();
+    generateSearchWindow();
 })
 
-$('#list-cards').on('click', 'div', async function(e) {
-    e.preventDefault();
-    console.log(e.target)
-    let card = $(e.target).closest('div')
-    let cardID = card.attr('data-card-id')
+generateSearchWindow = () => {
+    
+    createSearchHTML();    
 
-    await axios.get(`http://127.0.0.1:5000/cards/${cardID}`)
-})
+    $('.search-window').on('click','.close', () => {
+        $('.search-window').remove()
+    })
+
+    $('.search-window').on('submit','#search_form', (e) => {
+        e.preventDefault();
+        $('#list-cards').empty();
+        let params =`n=${$('#search').val()}`;
+        $('#search').val('');
+        getSearchResults(params);
+    })
+}
+
+createSearchHTML = () => {
+    $('body').append($('<div>').addClass('search-window'));
+
+    let closeBtn = $('<button>').addClass('btn btn-sm btn-default close').text('X')
+    
+    let searchTitle = $('<h2>').text('Search Digimon Cards')
+    
+    let searchForm = '<form id="search_form"><input id="search" name="n" class="form-control mb-1" placeholder="Search cards by name"/><p class=" mb-1"><b>-or-</b></p></form>'
+    
+    let advBtn = $('<button>').addClass('btn btn-lg btn-primary mb-4').text('Advanced Search')
+    
+    let cardResults = $('<div>').attr('id','list-cards').addClass('card-group')
+
+    let searchHeader = $('<section>').addClass('d-flex').append(searchTitle, closeBtn)
+
+    let hr = $('<hr>')
+
+    $('.search-window').append(searchHeader,hr,searchForm,advBtn,cardResults)
+}
 
 async function getSearchResults(params) {
     const DCG = '&series=Digimon Card Game'
-    const queryStr = `${BASE_API_URL}${params}${DCG}`
+    const queryStr = `${params}${DCG}`
 
     await axios
-            .get(queryStr)
+            .get(`${BASE_API_URL}` + queryStr)
             .then((res) => {
-                generateSearchWindow()
                 handleSearch(res)
-            }).catch((err) => {
+            })
+            .catch((err) => {
                 console.log(err)
 
             });
@@ -34,26 +59,31 @@ async function getSearchResults(params) {
 
 createCardHTML = (card) => {
     return `
-        <div data-card-id=${card.cardnumber} class='card mb-3'>
+        <div data-card-num=${card.cardnumber} class='card mb-3'>
         <img class='card-img' src='${card.image_url}' alt='${card.name}'
         </div>
     `;
 }
 
 handleSearch = (res) => {
-    $('.search-window').append($('<div id="list-cards" class="card-group"></div>'))
+    let cards = res.data
 
-    let cards = res.data              
+    $('#list-cards').on('click', 'img', async function(e) {
+        handleCardClick(e);
+    })
 
     cards.forEach(card => {
-        console.log(card)
         let newCard = $(createCardHTML(card))
         $('#list-cards').append(newCard);
     })
 }
 
-generateSearchWindow = () => {
-    $('body').append($('<div class="search-window"></div>'))
-    $('.search-window').append('<button class="btn btn-lg btn-primary>Advanced Search</button>')
-    $('.search-window').append('<button class="btn btn-sm close">X</button>')
+handleCardClick = (e) => {
+    let cardNum = $(e.target).closest('div').attr('data-card-num')
+    try {
+        window.location.href = '/cards/' + cardNum
+    }
+    catch (err) {
+        console.log(err)
+    }
 }

@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<div class="shared_decks_container">
+<div class="shared_decks_container container">
     {% for sh_deck in shared_decks %}
     <div class="card text-white bg-dark decks">
         <img class="card-img-top" src="{{highest_dp_card_img(main_cards(sh_deck.deck.main_decklist_id))}}" alt=""
