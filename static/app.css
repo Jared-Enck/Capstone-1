@@ -6,12 +6,19 @@ body {
 /* ######## navbar ######## */
 
 #logo {
-    height: 3em;
-    width: 3em;
+    height: 2.5em;
+    width: 2.5em;
 }
 
 .navbar {
     background-color: rgb(40, 94, 255);
+    padding-left: 3em;
+    padding-right: 3em;
+    margin-bottom: 0;
+}
+
+.nav-item {
+    margin-left: 1em;
 }
 
 .nav-link {
@@ -26,8 +33,9 @@ body {
 }
 
 #avatar {
-    height: 2.5em;
-    width: 2.5em;
+    height: 2em;
+    width: 2em;
+    border-radius: 20%;
 }
 
 /* ######## homepage ######## */
@@ -44,44 +52,86 @@ body {
 
 /* ######## search ######## */
 
-.search-window {
+#search-window {
     position: absolute;
-    margin-top: 0;
     margin-left: 50%;
-    padding: .5em 2em 1em 2em;
+    padding: 1em 2em 1em 2em;
     transform: translate(-50%);
-    width: 60vw;
+    width: 80vw;
     max-width: 1100px;
     border: .08em solid rgba(0, 0, 0, 0.3);
     box-shadow: .2em .1em .1em rgba(0, 0, 0, 0.2);
     border-radius: 7px;
+    z-index: 2;
 }
 
-#list-cards {
+.close {
+    font-size: 1.2em;
+    border: none;
+    transition: 250ms ease-out;
+}
+
+.close:hover {
+    transform: scale(1.3);
+    color: rgb(160, 0, 0);
+    font-weight: bold;
+    transition: 250ms ease-in;
+}
+
+.list-cards {
     display: grid;
     gap: 2em;
     grid-template-columns: repeat(auto-fit,minmax(11em, 1fr));
-    max-width: 100%;
     min-width: 0px;
+    padding-bottom: 1em;
 }
 
-.card {
-    width: 11em;
-    border: none;
-}
+/* ######## cards ######## */
+
+
 
 .card-img {
     width: 102%;
     height: 102%;
     border: none;
+    border-radius: 4%;
     box-shadow: .2em .1em .1em rgba(0, 0, 0, 0.2);
+    transition: 250ms ease-out;
     z-index: 1;
-    transition: 300ms ease-out;
 }
 
-.card-img:hover {
+#detail-card {
+    min-width: 210px;
+}
+
+.search-card-img:hover {
     cursor: pointer;
     transform: scale(1.1);
     box-shadow: .4em .3em .3em rgba(0, 0, 0, 0.2);
-    transition: 300ms ease-in;
+    transition: 250ms ease-in-out;
+}
+
+.stat {
+    word-wrap: break-word;
+}
+
+#effect{
+    padding: 0 ;
+}
+
+/* ######## user detail ######## */
+
+#profile-avatar {
+    width: 3em;
+    margin-right: 1em;
+    border-radius: 10%;
+}
+
+.banner {
+    width: 100%;
+    max-width: 1100px;
+}
+
+.banner h2 {
+    margin: 0;
 }
