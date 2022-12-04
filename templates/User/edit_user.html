@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Edit User{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-7 col-lg-4">
+      <form method="POST" id="edit_form">
+        <div class="form-group">
+          <h2>
+            Need to change something?
+          </h2>
+        </div>
+          {{ form.hidden_tag() }}
+    
+          {% for field in form if field.widget.input_type != 'hidden' %}
+              <div class="form-group">
+                {{ field.label(class="form-label") }}
+                {{ field(class="form-control mb-2") }}
+              </div>
+              {% for error in field.errors %}
+                  <small class="text-danger">
+                    {{ error }}
+                  </small>
+              {% endfor %}
+          {% endfor %}
+          <a href="/users/{{ user.id }}" class="btn btn-md btn-outline-secondary">Cancel
+          </a>
+          <button type="submit" class="btn btn-primary btn-md">Save</button>
+        </form>
+      </div>
+    </div>
+{% endblock %}

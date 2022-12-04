@@ -2,42 +2,29 @@
 {% block title %}User Info{% endblock %}
 
 {% block content %}
-<img src="{{ user.avatar }}" alt="Image for {{ user.username }}" id="profile-avatar">
-<div class="row full-width">
-  <div class="container">
-    <div class="row justify-content-end">
-      <div class="col-9">
-        <ul class="user-stats nav nav-pills">
-			<li class="stat">
-			  <p class="small">Comments</p>
-			  <h4>
-				<a href="/comments/{{ user.id }}">
-					{{ user.comments | length }}
-				</a>
-			  </h4>
-			</li>
-			<li class="stat">
-			  <p class="small">Decks</p>
-			  <h4>
-				<a href="/comments/{{ user.id }}">
+
+<div class="container-fluid banner">
+	<ul class="list-group">
+		<li class="list-group-item d-flex bg-light">
+			<img id="profile-avatar" src="{{ user.avatar }}" alt="Image for {{ user.username }}" class="col-2 pr-3">
+			<h2>{{ user.username }}</h2>
+		</li>
+			<div class="list-group list-group-horizontal">
+				<a href="/decks/{{ user.id }}" class="list-group-item list-group-item-action">
+					<i class="fa-regular fa-cards-blank"></i>
 					{{ user.decks | length }}
 				</a>
-			  </h4>
-			</li>
-			<div class="ml-auto">
+				<a href="/comments/{{ user.id }}" class="list-group-item list-group-item-action">
+					<i class="fa-regular fa-comment"></i>
+					{{ user.comments | length }}
+				</a>
 				{% if current_user.id == user.id %}
-				<a href="/edit/{{ user.id }}" class="btn btn-outline-secondary">Edit Profile</a>
-				<form method="POST" action="=/delete/{{ user.id }}" class="form-inline">
-				<button class="btn btn-outline-danger ml-2">Delete Profile</button>
-				</form>
+					<a href="/edit/{{ user.id }}" class="list-group-item list-group-item-action">Edit Profile
+					</a>
+					<a href="/delete/{{ user.id }}" class="list-group-item list-group-item-action list-group-item-danger">Delete Profile</a>
 				{% endif %}
-          	</div>
-        </ul>
-      </div>
-    </div>
-  </div>
+			</div>
+		</li>
+	</ul>
 </div>
-
-</div>
-
 {% endblock %}

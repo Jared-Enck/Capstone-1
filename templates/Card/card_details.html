@@ -1,6 +1,60 @@
 {% extends 'base.html' %}
-{% block title %}User Info{% endblock %}
+{% block title %}Card Info{% endblock %}
 
 {% block content %}
-<h1>Card details!</h1>
+<div class="container-fluid banner">
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <div id="detail-card">
+                <img class="card-img" src="{{ card.image_url }}" alt="{{ card.name }}">
+            </div>
+        </div>
+        <div class="col-8">
+            <ul class="list-group" style="min-width: 320px;">
+                <li class="list-group-item bg-light p-2">
+                    <h2>
+                        {{ card.name }}
+                    </h2>
+                </li>
+                <li class="list-group-item container">
+                    {% for stat_group in stat_list %}
+                    <ul class="list-group list-group-horizontal mb-2">
+                        {% for stat in stat_group %}
+                        <li class="list-group-item col-4 stat p-2 bg-light">
+                            <p class="m-0">
+                                <small>
+                                    {{ stat[0] }}
+                                </small>
+                            </p>
+                            <span>
+                                {{ stat[1] }}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endfor %}
+                </li>
+            </ul>
+            {% if card.main_effect or card.source_effect %}
+            <ul id="effect" class="list-group mt-2">
+                <li class="list-group-item bg-light">
+                    <h2>
+                        Card Effect
+                    </h2>
+                </li>
+                <li class="list-group-item">
+                    <p>
+                        {{ card.main_effect }}
+                    </p>
+                    {% if card.source_effect != None %}
+                    <p>
+                        {{ card.source_effect }}
+                    </p>
+                    {% endif %}
+                </li>
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

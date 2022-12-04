@@ -1,7 +1,6 @@
 const BASE_API_URL = 'https://digimoncard.io/api-public/search.php?'
 
 $('.nav-item').on('click','#search-button',(e)=>{
-    $('.search-window').remove();
     generateSearchWindow();
 })
 
@@ -9,37 +8,42 @@ generateSearchWindow = () => {
     
     createSearchHTML();    
 
-    $('.search-window').on('click','.close', () => {
-        $('.search-window').remove()
+    $('#search-window').on('click','.close', () => {
+        $('#search-window').remove()
     })
 
-    $('.search-window').on('submit','#search_form', (e) => {
+    $('#search-window').on('submit','#search_form', (e) => {
         e.preventDefault();
-        $('#list-cards').empty();
+        $('.list-cards').empty();
         let params =`n=${$('#search').val()}`;
         $('#search').val('');
         getSearchResults(params);
     })
+
+    $('.list-cards').on('click', 'img', async function(e) {
+        handleCardClick(e);
+    })
 }
 
 createSearchHTML = () => {
-    $('body').append($('<div>').addClass('search-window'));
+    $('body').prepend($('<div>').attr('id','search-window').addClass('conatiner bg-light mt-2'));
 
-    let closeBtn = $('<button>').addClass('btn btn-sm btn-default close').text('X')
+    let closeBtn = $('<button>').addClass('btn btn-sm btn-basic ms-auto close').text('X')
     
     let searchTitle = $('<h2>').text('Search Digimon Cards')
     
-    let searchForm = '<form id="search_form"><input id="search" name="n" class="form-control mb-1" placeholder="Search cards by name"/><p class=" mb-1"><b>-or-</b></p></form>'
+    let sContent = $('<div>').attr('id','s-content').addClass('justify-content-center')
+
+    let searchForm = '<form id="search_form"><input id="search" name="n" type="text" class="form-control mb-1" placeholder="Search cards by name"/><p class=" mb-1"><b>-or-</b></p></form>'
     
     let advBtn = $('<button>').addClass('btn btn-lg btn-primary mb-4').text('Advanced Search')
     
-    let cardResults = $('<div>').attr('id','list-cards').addClass('card-group')
+    let cardResults = $('<div>').addClass('list-cards card-columns')
 
-    let searchHeader = $('<section>').addClass('d-flex').append(searchTitle, closeBtn)
+    let searchHeader = $('<div>').addClass('d-flex m-1').append(searchTitle, closeBtn)
 
-    let hr = $('<hr>')
-
-    $('.search-window').append(searchHeader,hr,searchForm,advBtn,cardResults)
+    $('#search-window').append(sContent)
+    $('#s-content').append(searchHeader,searchForm,advBtn,cardResults)
 }
 
 async function getSearchResults(params) {
@@ -59,8 +63,8 @@ async function getSearchResults(params) {
 
 createCardHTML = (card) => {
     return `
-        <div data-card-num=${card.cardnumber} class='card mb-3'>
-        <img class='card-img' src='${card.image_url}' alt='${card.name}'
+        <div data-card-num=${card.cardnumber} class='search-card'>
+        <img class='card-img search-card-img' src='${card.image_url}' alt='${card.name}'
         </div>
     `;
 }
@@ -68,13 +72,9 @@ createCardHTML = (card) => {
 handleSearch = (res) => {
     let cards = res.data
 
-    $('#list-cards').on('click', 'img', async function(e) {
-        handleCardClick(e);
-    })
-
     cards.forEach(card => {
         let newCard = $(createCardHTML(card))
-        $('#list-cards').append(newCard);
+        $('.list-cards').append(newCard);
     })
 }
 

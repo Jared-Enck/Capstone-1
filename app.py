@@ -3,7 +3,7 @@ from flask import Flask, redirect, render_template, request, flash, jsonify, url
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Card, MainDecklist, MainDeckCard, EggDecklist, EggDeckCard, SideDecklist, SideDeckCard, Deck, SharedDeck
-from forms import RegisterForm, LoginForm, AdvancedSearchForm
+from forms import RegisterForm, LoginForm, EditUserForm,AdvancedSearchForm
 
 app = Flask(__name__)
 CORS(app)
@@ -37,7 +37,7 @@ app.jinja_env.globals.update(main_cards=MainDecklist.main_cards)
 app.jinja_env.globals.update(highest_dp_card_img=MainDecklist.highest_dp_card_img)
 app.jinja_env.globals.update(get_deck_comments=SharedDeck.get_deck_comments)
 
-@app.route('/', methods=['GET','POST'])
+@app.route('/', methods=['GET'])
 def homepage():
     """Show homepage."""
     
@@ -106,6 +106,25 @@ def user_details(user_id):
 
     return render_template('/User/detail.html', user=user)
 
+@app.route('/edit/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def edit_user(user_id):
+    """Update info for current user."""
+    
+    user = User.query.get_or_404(user_id)    
+    form = EditUserForm(obj=user)
+    
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        
+        db.session.commit()
+        
+        flash(f"{user.username}'s info has been updated.", 'success')
+        
+        return redirect(url_for('user_details', user_id=user_id))
+    
+    return render_template('/User/edit_user.html', form=form, user=user)
+
 ##############################
 ######## Card views ########
 
@@ -115,10 +134,13 @@ def show_card(number):
     
     card = Card.query.filter(Card.cardnumber == number).first()
     
-    return render_template('/Card/card_details.html', card=card)
+    stat_list = Card.get_detail_stats(card)
+    
+    return render_template('/Card/card_details.html', card=card, stat_list=stat_list)
 
 @app.route('/adv_search')
 def show_adv_search():
     """Show adv search page."""
     
     return render_template('/Search/adv_search.html')
+
