@@ -52,3 +52,13 @@ class AdvancedSearchForm(FlaskForm):
     attr = SelectField('Attribute', choices=attr_choices)
     
     search = StringField('Search by card name')
+    
+class EditUserForm(FlaskForm):
+    """Edit user info form."""
+    
+    username = StringField('Username', validators=[DataRequired(message='Enter a username.')])
+    email = EmailField('Email', validators=[Email(message='Enter a valid email.')])
+    
+    choices = []
+    
+    avatar = SelectField('Avatar', choices=choices, validators=[Optional()])
