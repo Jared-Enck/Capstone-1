@@ -26,8 +26,8 @@ def save_all_cards():
                 artist=card['artist'],
                 dp=card['dp'],
                 cardnumber=card['cardnumber'],
-                maineffect=card['maineffect'],
-                soureeffect=card['soureeffect'],
+                main_effect=card['maineffect'],
+                source_effect=card['soureeffect'],
                 set_name=card['set_name'],
                 image_url=card['image_url'])
         
