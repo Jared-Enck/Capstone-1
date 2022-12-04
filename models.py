@@ -239,9 +239,9 @@ class Card(db.Model):
                    nullable=True)
     cardnumber = db.Column(db.Text, 
                            nullable=False)
-    maineffect = db.Column(db.Text, 
+    main_effect = db.Column(db.Text, 
                            nullable=True)
-    soureeffect = db.Column(db.Text, 
+    source_effect = db.Column(db.Text, 
                             nullable=True)
     set_name = db.Column(db.Text, 
                          nullable=False)
@@ -260,6 +260,22 @@ class Card(db.Model):
                 MainDeckCard.card_id == card_id).all()
         
         return main_decklists
+    
+    def get_detail_stats(card):
+        """Returns dictionary for stats obj"""
+        
+        card_obj = list({'Color': card.color,
+                    'Type': card.type,
+                    'Stage': card.stage,
+                    'DP': card.dp,
+                    'Level': card.level,
+                    'Play Cost': card.play_cost,
+                    'Attribute': card.attribute,
+                    'Number': card.cardnumber,
+                    'Rarity': card.cardrarity}.items())
+
+        return [ card_obj[0:3], card_obj[3:6], card_obj[6:] ]
+        
     
 class MainDecklist(db.Model):
     """Main decklist."""
