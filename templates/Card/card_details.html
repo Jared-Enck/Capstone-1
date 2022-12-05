@@ -2,11 +2,11 @@
 {% block title %}Card Info{% endblock %}
 
 {% block content %}
-<div class="container-fluid banner">
-    <div class="row justify-content-center">
+<div class="container banner">
+    <div class="row">
         <div class="col-4">
             <div id="detail-card">
-                <img class="card-img" src="{{ card.image_url }}" alt="{{ card.name }}">
+                <img class="card-img img-fluid" src="{{ card.image_url }}" alt="{{ card.name }}">
             </div>
         </div>
         <div class="col-8">
