@@ -2,17 +2,17 @@
 {% block title %}Card Info{% endblock %}
 
 {% block content %}
-<div class="container banner">
-    <div class="row">
-        <div class="col-4">
-            <div id="detail-card">
+<div class="container-sm mt-2">
+    <div class="row justify-content-center">
+        <div class="col-4" style="min-width: 320px;">
+            <div>
                 <img class="card-img img-fluid" src="{{ card.image_url }}" alt="{{ card.name }}">
             </div>
         </div>
         <div class="col-8">
             <ul class="list-group" style="min-width: 320px;">
                 <li class="list-group-item bg-light p-2">
-                    <h2>
+                    <h2 class="m-0">
                         {{ card.name }}
                     </h2>
                 </li>
@@ -38,9 +38,9 @@
             {% if card.main_effect or card.source_effect %}
             <ul id="effect" class="list-group mt-2">
                 <li class="list-group-item bg-light">
-                    <h2>
+                    <h4 class="m-0">
                         Card Effect
-                    </h2>
+                    </h4>
                 </li>
                 <li class="list-group-item">
                     <p>

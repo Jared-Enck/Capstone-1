@@ -1,6 +1,6 @@
 from flask_cors import CORS
 from flask import Flask, redirect, render_template, request, flash, jsonify, url_for
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Card, MainDecklist, MainDeckCard, EggDecklist, EggDeckCard, SideDecklist, SideDeckCard, Deck, SharedDeck
 from forms import RegisterForm, LoginForm, EditUserForm,AdvancedSearchForm
@@ -64,7 +64,7 @@ def register():
         return redirect(url_for('homepage'))
         
     
-    return render_template('/User/register.html', form=form)        
+    return render_template('/user/register.html', form=form)        
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -84,7 +84,7 @@ def login():
             
             flash("Invalid credentials.", 'danger')
             
-    return render_template('/User/login.html', form=form)
+    return render_template('/user/login.html', form=form)
                    
 @app.route('/logout')
 @login_required
@@ -98,13 +98,12 @@ def logout():
     return redirect(url_for('homepage'))
 
 @app.route('/users/<int:user_id>')
-@login_required
 def user_details(user_id):
     """Show user details page."""
     
     user = User.query.get_or_404(user_id)
-
-    return render_template('/User/detail.html', user=user)
+    
+    return render_template('/user/detail.html', user=user)
 
 @app.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 @login_required
@@ -123,9 +122,24 @@ def edit_user(user_id):
         
         return redirect(url_for('user_details', user_id=user_id))
     
-    return render_template('/User/edit_user.html', form=form, user=user)
+    return render_template('/user/edit_user.html', form=form, user=user)
 
-##############################
+@app.route('/users/delete', methods=['POST'])
+@login_required
+def delete_user():    
+    
+    user = User.query.get_or_404(current_user.id)
+    
+    logout_user()
+    db.session.delete(user)
+    
+    db.session.commit()
+    
+    flash('Deleted your account.', 'info')
+    
+    return redirect(url_for('homepage'))
+    
+############################
 ######## Card views ########
 
 @app.route('/cards/<number>')
@@ -136,11 +150,32 @@ def show_card(number):
     
     stat_list = Card.get_detail_stats(card)
     
-    return render_template('/Card/card_details.html', card=card, stat_list=stat_list)
+    return render_template('/card/card_details.html', card=card, stat_list=stat_list)
 
 @app.route('/adv_search')
 def show_adv_search():
     """Show adv search page."""
     
-    return render_template('/Search/adv_search.html')
+    return render_template('/search/adv_search.html')
 
+
+############################
+######## Deck views ########
+
+@app.route('/decks')
+@login_required
+def user_decks():
+    """Show all decks for user."""
+    
+    decks = Deck.user_decks(current_user)
+        
+    return render_template('/deck/decks.html', decks=decks)
+
+@app.route('/deck_builder', methods=['GET','POST'])
+@login_required
+def show_deck_builder():
+    """Shows deck builder or saves deck form."""
+    
+    adv_form = AdvancedSearchForm()
+    
+    return render_template('/deck/deck_builder.html', adv_form=adv_form)

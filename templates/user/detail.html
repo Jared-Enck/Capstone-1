@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}User Info{% endblock %}
+
+{% block content %}
+<div class="container-sm banner">
+	<div class="row justify-content-center">
+		<ul class="col-12">
+			<li class="d-flex bg-light">
+				<img id="profile-avatar" src="{{ user.avatar }}" alt="Image for {{ user.username }}" class="col-2 pr-3">
+				<h2>{{ user.username }}</h2>
+			</li>
+				<div class="list-group list-group-horizontal">
+					<a href="/decks/{{ user.id }}" class="list-group-item">
+						<i class="fa-regular fa-cards-blank"></i>
+						{{ user.decks | length }}
+					</a>
+					<a href="/comments/{{ user.id }}" class="list-group-item">
+						<i class="fa-regular fa-comment"></i>
+						{{ user.comments | length }}
+					</a>
+					{% if current_user.id == user.id %}
+						<a href="/edit/{{ user.id }}" class="list-group-item">Edit Profile
+						</a>
+						<button id="delete-button" class="list-group-item list-group-item-danger">Delete Profile</button>
+					{% endif %}
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Deck Builder{% endblock %}
+{% block content %}
+<div class="container-md mt-3">
+    <div class="row">
+        <h1>
+            Deck Builder
+        </h1>
+        {{ adv_form.hidden_tag() }}
+        <form id="adv-search" class="col mb-3">
+            <input placeholder="Search card name" name="n" type="search" 
+            class="form-control mb-3">
+            <div class="d-flex">
+                {% for field in adv_form if field.widget.input_type != 'hidden' %}
+                    {{ field(class="form-control filter mb-2") }}
+                    {% for error in field.errors %}
+                        <small class="text-danger">
+                        {{ error }}
+                        </small>
+                    {% endfor %}
+                {% endfor %}
+            <button id="clear" class="btn btn-sm btn-basic">
+                <i class="fa-sharp fa-solid fa-rotate"></i>
+            </button>
+            </div>
+            <button class="btn btn-md btn-primary">Search</button>
+        </form>
+        <div class="list-cards db-search-results col-12">
+        </div>
+    </div>
+    <div class="row mt-2">
+        <ul class="list-group p-0">
+            <li class="list-group-item bg-secondary p-1">
+                <h2 class="m-0">
+                    Main Deck
+                </h2>
+            </li>
+            <li class="list-group-item main-deck decklist">
+
+            </li>
+        </ul>
+        <ul class="list-group p-0">
+            <li class="list-group-item bg-secondary p-1">
+                <h2 class="m-0">
+                    Egg Deck
+                </h2>
+            </li>
+            <li class="list-group-item egg-deck decklist">
+
+            </li>
+        </ul>
+        <ul class="list-group p-0">
+            <li class="list-group-item bg-secondary p-1">
+                <h2 class="m-0">
+                    Side Deck
+                </h2>
+            </li>
+            <li class="list-group-item side-deck decklist">
+
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

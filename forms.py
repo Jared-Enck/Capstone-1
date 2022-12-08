@@ -19,7 +19,8 @@ class LoginForm(FlaskForm):
 class AdvancedSearchForm(FlaskForm):
     """Search API for cards with specified params and return card data."""
     
-    color_choices = [('Black','Black'),
+    color_choices = [('','Select Color'),
+                     ('Black','Black'),
                      ('Blue','Blue'),
                      ('Colorless','Colorless'),
                      ('Green','Green'),
@@ -28,31 +29,30 @@ class AdvancedSearchForm(FlaskForm):
                      ('White','White'),
                      ('Yellow','Yellow')]
     
-    type_choices = [('Digimon','Digimon'), 
+    type_choices = [('','Select Type'),
+                    ('Digimon','Digimon'), 
                     ('Digi-Egg','Digi-Egg'),
                     ('Option','Option'),
                     ('Tamer','Tamer')]
     
-    level_choices = [('2','2'),
-                     ('3','3'),
-                     ('4','4'),
-                     ('5','5'),
-                     ('6','6'),
-                     ('7','7')]
-    
-    attr_choices = [('Data','Data'),
+    attr_choices = [('','Select Attribute'),
+                    ('Data','Data'),
                      ('Free','Free'),
                      ('Vaccine','Vaccine'),
                      ('Variable','Variable'),
                      ('Virus','Virus')]
     
-    color = SelectField('Color', choices=color_choices)
-    type = SelectField('Type', choices=type_choices)
-    level = SelectField('Level', choices=level_choices)
-    attr = SelectField('Attribute', choices=attr_choices)
+    sort_choices = [('','Sort By'),
+                    ('name','Name'),
+                     ('power','Power'),
+                     ('code','Code'),
+                     ('color','Color')]
     
-    search = StringField('Search by card name')
-    
+    color = SelectField('Color', choices=color_choices, default='Select Color')
+    type = SelectField('Type', choices=type_choices, default='Select Type')
+    attribute = SelectField('Attribute', choices=attr_choices, default='Select Attribute')
+    sort = SelectField('Sort', choices=sort_choices, default='Sort By')
+        
 class EditUserForm(FlaskForm):
     """Edit user info form."""
     

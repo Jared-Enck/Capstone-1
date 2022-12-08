@@ -264,7 +264,7 @@ class Card(db.Model):
     def get_detail_stats(card):
         """Returns dictionary for stats obj"""
         
-        card_obj = list({'Color': card.color,
+        stat_obj = list({'Color': card.color,
                     'Type': card.type,
                     'Stage': card.stage,
                     'DP': card.dp,
@@ -274,7 +274,7 @@ class Card(db.Model):
                     'Number': card.cardnumber,
                     'Rarity': card.cardrarity}.items())
 
-        return [ card_obj[0:3], card_obj[3:6], card_obj[6:] ]
+        return [ stat_obj[0:3], stat_obj[3:6], stat_obj[6:] ]
         
     
 class MainDecklist(db.Model):
@@ -428,6 +428,13 @@ class Deck(db.Model):
     
     def __repr__(self):
         return f"<Deck #{self.id}: {self.name}, {self.user_id}>"
+    
+    def user_decks(current_user):
+        """Get all decks for current user."""
+        
+        decks = Deck.query.filter(Deck.user_id == current_user.id).all()
+        
+        return decks
     
 class UserDeck(db.Model):
     """User decks."""
