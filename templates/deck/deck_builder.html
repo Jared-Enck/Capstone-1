@@ -3,17 +3,17 @@
 {% block title %}Deck Builder{% endblock %}
 {% block content %}
 <div class="container-md mt-3">
-    <div class="row">
+    <div class="row justify-content-center">
         <h1>
             Deck Builder
         </h1>
         {{ adv_form.hidden_tag() }}
-        <form id="adv-search" class="col mb-3">
+        <form id="adv-search">
             <input placeholder="Search card name" name="n" type="search" 
             class="form-control mb-3">
             <div class="d-flex">
                 {% for field in adv_form if field.widget.input_type != 'hidden' %}
-                    {{ field(class="form-control filter mb-2") }}
+                    {{ field(class="form-control bg-light filter mb-2") }}
                     {% for error in field.errors %}
                         <small class="text-danger">
                         {{ error }}
@@ -26,12 +26,18 @@
             </div>
             <button class="btn btn-md btn-primary">Search</button>
         </form>
+        <div class="col-md-3 m-2">
+            <select class="form-control bg-light" name="card-sorter" id="card-sorter">
+                <option value="main">Add to Main/Egg Deck</option>
+                <option value="side">Add to Side Deck</option>
+            </select>
+        </div>
         <div class="list-cards db-search-results col-12">
         </div>
     </div>
     <div class="row mt-2">
         <ul class="list-group p-0">
-            <li class="list-group-item bg-secondary p-1">
+            <li class="list-group-item bg-light p-1">
                 <h2 class="m-0">
                     Main Deck
                 </h2>
@@ -41,7 +47,7 @@
             </li>
         </ul>
         <ul class="list-group p-0">
-            <li class="list-group-item bg-secondary p-1">
+            <li class="list-group-item bg-light p-1">
                 <h2 class="m-0">
                     Egg Deck
                 </h2>
@@ -51,7 +57,7 @@
             </li>
         </ul>
         <ul class="list-group p-0">
-            <li class="list-group-item bg-secondary p-1">
+            <li class="list-group-item bg-light p-1">
                 <h2 class="m-0">
                     Side Deck
                 </h2>

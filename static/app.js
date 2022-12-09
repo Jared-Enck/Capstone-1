@@ -12,7 +12,6 @@ $('#adv-search').on('submit', (e) => {
     e.preventDefault();
     $('option[value=""]').attr('disabled','')
     const params = $('#adv-search').serialize()
-    console.log(params)
     getSearchResults(params)
 })
 
@@ -25,7 +24,7 @@ clearForm = () => {
     $('option[value=""]').removeAttr('disabled','')
     $('.list-cards').empty()
     $('input').val('')
-    $('select').val('')
+    $('#adv-search').find('select').val('')
 }
 
 generateDeleteConfirmation = () => {
@@ -76,7 +75,7 @@ generateSearchWindow = () => {
         getSearchResults(params);
     })
 
-    $('.list-cards').on('click', 'img', async function(e) {
+    $('#search-window').on('click', 'img', (e) => {
         handleCardClick(e);
     })
 }
@@ -136,18 +135,64 @@ handleSearch = (res) => {
     })
 }
 
+$('.db-search-results').on('click','img', (e) => {
+    handleDBCardClick(e);
+})
+
 handleCardClick = (e) => {
-    if (window.location.href === '/deck_builder?') {
-        console.log('working?')
-        console.log(e.target)
-    }
-    else{
-        let cardNum = $(e.target).closest('div').attr('data-card-num')
-        try {
-            window.location.href = '/cards/' + cardNum
-        }
-        catch (err) {
-            console.log(err)
-        }
+    const cardNum = $(e.target).closest('div').attr('data-card-num')
+
+    window.location.href = '/cards/' + cardNum
+}
+
+handleDBCardClick = (e) => {
+    const cardNum = $(e.target).closest('div').attr('data-card-num')
+    
+    DBHandler(cardNum)
+}
+
+DBHandler = (cardNum) => {
+    const mDeck = []
+    const eDeck = []
+    const sDeck = []
+
+    if ($('#card-sorter').val() === 'main') {
+        mDeck.push(cardNum)
+        const cardStats = [...getCardData(cardNum)]
+        console.log(cardStats)
+        
     }
 }
+
+async function getCardData(cardNum) {
+    const mainDeck = $('.main-deck')
+    const eggDeck = $('.egg-deck')
+    const sideDeck = $('.side-deck')
+
+    await axios.post(`/cards/${cardNum}`).then(resp => {
+        console.log(resp)
+    }).catch((err) => {
+        console.log(err)
+    })
+}
+
+class Deck {
+    constructor(mainDeck,eggDeck,sideDeck) {
+        this.mainDeck = mainDeck
+        this.eggDeck = eggDeck
+        this.sideDeck = sideDeck
+    }
+    mDeckLength() {
+        return this.mainDeck.length === 50
+    }
+    eDeckLength() {
+        return this.eggDeck.length <= 5
+    }
+    sDeckLength() {
+        return this.sideDeck.length <= 10
+    }
+    checkInstancesOfCard() {
+
+    }
+}
+

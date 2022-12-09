@@ -34,6 +34,8 @@ def unauthorized():
 login_manager.login_view = 'login'
 
 app.jinja_env.globals.update(main_cards=MainDecklist.main_cards)
+app.jinja_env.globals.update(egg_cards=EggDecklist.egg_cards)
+app.jinja_env.globals.update(side_cards=SideDecklist.side_cards)
 app.jinja_env.globals.update(highest_dp_card_img=MainDecklist.highest_dp_card_img)
 app.jinja_env.globals.update(get_deck_comments=SharedDeck.get_deck_comments)
 
@@ -142,13 +144,16 @@ def delete_user():
 ############################
 ######## Card views ########
 
-@app.route('/cards/<number>')
+@app.route('/cards/<number>', methods=['GET','POST'])
 def show_card(number):
     """Show card details."""
     
     card = Card.query.filter(Card.cardnumber == number).first()
     
     stat_list = Card.get_detail_stats(card)
+    
+    if request.method == 'POST':
+        return jsonify(stat_list)
     
     return render_template('/card/card_details.html', card=card, stat_list=stat_list)
 
