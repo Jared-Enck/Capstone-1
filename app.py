@@ -144,7 +144,7 @@ def delete_user():
 ############################
 ######## Card views ########
 
-@app.route('/cards/<number>', methods=['GET','POST'])
+@app.route('/cards/<number>', methods=['GET','PATCH'])
 def show_card(number):
     """Show card details."""
     
@@ -152,8 +152,10 @@ def show_card(number):
     
     stat_list = Card.get_detail_stats(card)
     
-    if request.method == 'POST':
-        return jsonify(stat_list)
+    serialized_stats = Card.serialize_stats(card)
+    
+    if request.method == 'PATCH':
+        return jsonify(serialized_stats)
     
     return render_template('/card/card_details.html', card=card, stat_list=stat_list)
 
@@ -167,20 +169,22 @@ def show_adv_search():
 ############################
 ######## Deck views ########
 
-@app.route('/decks')
+@app.route('/decks', methods=['GET','POST'])
 @login_required
 def user_decks():
-    """Show all decks for user."""
+    """Show all decks for user and deck builder on btn click"""
     
     decks = Deck.user_decks(current_user)
-        
-    return render_template('/deck/decks.html', decks=decks)
-
-@app.route('/deck_builder', methods=['GET','POST'])
-@login_required
-def show_deck_builder():
-    """Shows deck builder or saves deck form."""
     
     adv_form = AdvancedSearchForm()
+        
+    return render_template('/deck/decks.html', decks=decks,adv_form=adv_form)
+
+# @app.route('/deck_builder', methods=['GET','POST'])
+# @login_required
+# def show_deck_builder():
+#     """Shows deck builder or saves deck form."""
     
-    return render_template('/deck/deck_builder.html', adv_form=adv_form)
+#     adv_form = AdvancedSearchForm()
+    
+#     return render_template('/deck/deck_builder.html', adv_form=adv_form)

@@ -119,6 +119,7 @@ async function getSearchResults(params) {
 }
 
 createCardHTML = (card) => {
+    // add hover stats here maybe? ***
     return `
         <div data-card-num=${card.cardnumber} class='search-card'>
         <img class='card-img search-card-img' src='${card.image_url}' alt='${card.name}'
@@ -135,64 +136,157 @@ handleSearch = (res) => {
     })
 }
 
-$('.db-search-results').on('click','img', (e) => {
-    handleDBCardClick(e);
-})
-
 handleCardClick = (e) => {
     const cardNum = $(e.target).closest('div').attr('data-card-num')
 
     window.location.href = '/cards/' + cardNum
 }
 
-handleDBCardClick = (e) => {
-    const cardNum = $(e.target).closest('div').attr('data-card-num')
-    
-    DBHandler(cardNum)
-}
-
-DBHandler = (cardNum) => {
-    const mDeck = []
-    const eDeck = []
-    const sDeck = []
-
-    if ($('#card-sorter').val() === 'main') {
-        mDeck.push(cardNum)
-        const cardStats = [...getCardData(cardNum)]
-        console.log(cardStats)
-        
-    }
-}
-
-async function getCardData(cardNum) {
-    const mainDeck = $('.main-deck')
-    const eggDeck = $('.egg-deck')
-    const sideDeck = $('.side-deck')
-
-    await axios.post(`/cards/${cardNum}`).then(resp => {
-        console.log(resp)
-    }).catch((err) => {
-        console.log(err)
-    })
-}
+$('#deck-builder-btn').on('click', (e) => {
+    e.preventDefault();
+    $('#pre-DB-content').remove()
+    $('#DB').removeClass('d-none')
+    new Deck(50,5,10,4).startDB()
+})
 
 class Deck {
-    constructor(mainDeck,eggDeck,sideDeck) {
-        this.mainDeck = mainDeck
-        this.eggDeck = eggDeck
-        this.sideDeck = sideDeck
+    constructor(mainLimit,eggLimit,sideLimit,cardLimit) {
+        this.mainLimit = mainLimit
+        this.eggLimit = eggLimit
+        this.sideLimit = sideLimit
+        this.cardLimit = cardLimit
+        this.decklist = {
+            mainDeck: [],
+            eggDeck: [],
+            sideDeck: []
+        }
+    }
+    startDB = () => {    
+        this.handleDBCardClick = this.handleClick.bind(this)
+        $('.db-search-results').on('click','img', this.handleDBCardClick)
+        this.handledecklistClick = this.decklistClick.bind(this)
+        $('.decklist-area').on('click', 'img', this.handledecklistClick)
     }
     mDeckLength() {
-        return this.mainDeck.length === 50
+        return this.decklist.mainDeck.length < this.mainLimit
     }
     eDeckLength() {
-        return this.eggDeck.length <= 5
+        return this.decklist.eggDeck.length < this.eggLimit
     }
     sDeckLength() {
-        return this.sideDeck.length <= 10
+        return this.decklist.sideDeck.length < this.sideLimit
     }
-    checkInstancesOfCard() {
+    checkInstancesOfCard(cardNum, isEgg) {
+        const {cardLimit,decklist} = this
+        
+        if (isEgg) {
+            const eggSideArry = decklist.eggDeck.concat(decklist.sideDeck)
 
+            const eggCardCount = eggSideArry.filter(val => {
+                return val === cardNum
+            })
+
+            return eggCardCount.length < cardLimit
+
+        } else {
+            const mainSideArry = decklist.mainDeck.concat(decklist.sideDeck)
+
+            const mainCardCount = mainSideArry.filter(val => {
+                return val === cardNum
+            })
+
+            return mainCardCount.length < cardLimit
+        }
+    }
+    mainCardSorter(cardNum,cardData,isEgg) {
+        const card = createCardHTML(cardData)
+
+        if (isEgg) {
+            if (!this.eDeckLength()) {
+                console.log('Deck can have only 5 egg cards.')
+            } else {
+                this.decklist.eggDeck.push(cardNum)
+                let count = parseInt($('#ED-count').html())
+                count ++;
+                $('#ED-count').html(count)
+                $('.egg-deck').append(card)
+            }
+        } else {
+            if (!this.mDeckLength()) {
+                console.log('Deck can have only 50 main cards.')
+            } else {
+                this.decklist.mainDeck.push(cardNum)
+                let count = parseInt($('#MD-count').html())
+                count ++;
+                $('#MD-count').html(count)
+                $('.main-deck').append(card)
+            }
+        }
+    }
+    sideCardSorter(cardNum,cardData) {
+        const card = createCardHTML(cardData)
+
+        if (!this.sDeckLength()) {
+            console.log('Deck can have only 10 side cards.')
+        } else {
+            this.decklist.sideDeck.push(cardNum)
+            let count = parseInt($('#SD-count').html())
+            count ++;
+            $('#SD-count').html(count)
+            $('.side-deck').append(card)            
+        }
+    }
+    removeCard(cardNum, deckType) {
+        if (deckType === 'main') {
+            const idx =  this.decklist.mainDeck.indexOf(cardNum)
+            let count = parseInt($('#MD-count').html())
+            count --;
+            $('#MD-count').html(count)
+            return this.decklist.mainDeck.splice(idx,1)
+        }
+        if (deckType === 'egg') {
+            const idx =  this.decklist.eggDeck.indexOf(cardNum)
+            let count = parseInt($('#ED-count').html())
+            count --;
+            $('#ED-count').html(count)
+            return this.decklist.eggDeck.splice(idx,1)
+        }
+        if (deckType === 'side') {
+            const idx =  this.decklist.sideDeck.indexOf(cardNum)
+            let count = parseInt($('#SD-count').html())
+            count --;
+            $('#SD-count').html(count)
+            return this.decklist.sideDeck.splice(idx,1)
+        }
+    }
+    async handleClick(e) {
+        const cardNum = $(e.target).closest('div').attr('data-card-num')
+
+        const cardData = await axios.patch(`/cards/${cardNum}`).then(resp => {
+            return resp.data
+        }).catch(err => {
+            console.log(err)
+        })
+
+        const isEgg = cardData.type === 'Digi-Egg'
+
+        if (!this.checkInstancesOfCard(cardNum,isEgg)) {
+            console.log('Can have only 4 of any 1 card between main/egg and side decks.')
+        } else {
+            if ($('#card-sorter').val() === 'main') {
+                this.mainCardSorter(cardNum,cardData,isEgg)
+            } else {
+                this.sideCardSorter(cardNum,cardData)
+            }
+        }
+    }
+    decklistClick(e) {
+        const cardNum = $(e.target).closest('div').attr('data-card-num')
+
+        const deckType = $(e.target).closest('li').attr('data-deck-type')
+
+        this.removeCard(cardNum,deckType)
+        $($(e.target).parent().remove())
     }
 }
 

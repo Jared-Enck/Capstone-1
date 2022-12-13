@@ -2,7 +2,7 @@
 
 {% block title %}Deck Builder{% endblock %}
 {% block content %}
-<div class="container-md mt-3">
+<div id="DB" class="container-md mt-3">
     <div class="row justify-content-center">
         <h1>
             Deck Builder
@@ -37,32 +37,50 @@
     </div>
     <div class="row mt-2">
         <ul class="list-group p-0">
-            <li class="list-group-item bg-light p-1">
+            <li class="list-group-item bg-light p-1 d-flex">
                 <h2 class="m-0">
                     Main Deck
                 </h2>
+                <span class="deck-counter">
+                    <span id="MD-count">
+                        0
+                    </span>
+                    /50
+                </span>
             </li>
-            <li class="list-group-item main-deck decklist">
+            <li class="list-group-item main-deck decklist-area">
 
             </li>
         </ul>
         <ul class="list-group p-0">
-            <li class="list-group-item bg-light p-1">
+            <li class="list-group-item bg-light p-1 d-flex">
                 <h2 class="m-0">
                     Egg Deck
                 </h2>
+                <span class="deck-counter">
+                    <span id="ED-count">
+                        0
+                    </span>
+                    /5
+                </span>
             </li>
-            <li class="list-group-item egg-deck decklist">
+            <li class="list-group-item egg-deck decklist-area">
 
             </li>
         </ul>
         <ul class="list-group p-0">
-            <li class="list-group-item bg-light p-1">
+            <li class="list-group-item bg-light p-1 d-flex">
                 <h2 class="m-0">
                     Side Deck
                 </h2>
+                <span class="deck-counter">
+                    <span id="SD-count">
+                        0
+                    </span>
+                    /10
+                </span>
             </li>
-            <li class="list-group-item side-deck decklist">
+            <li class="list-group-item side-deck decklist-area">
 
             </li>
         </ul>

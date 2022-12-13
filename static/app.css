@@ -192,8 +192,14 @@ body {
     max-height: 400px;
     overflow:auto;
     padding: 2em;
+    margin: 0;
 }
 
-.decklist {
+.decklist-area {
+    display: grid;
     height: 20vh;
+    gap: 2em;
+    grid-template-columns: repeat(5,minmax(10em, 1fr));
+    min-width: 0px;
+    padding-bottom: 1em;
 }

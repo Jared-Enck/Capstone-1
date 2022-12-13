@@ -275,6 +275,20 @@ class Card(db.Model):
                     'Rarity': card.cardrarity}.items())
 
         return [ stat_obj[0:3], stat_obj[3:6], stat_obj[6:] ]
+    
+    def serialize_stats(self):
+        """Serialize card stats for deck builder."""
+        
+        return {
+            'id' : self.id,
+            'name': self.name,
+            'type': self.type,
+            'color': self.color,
+            'play_cost': self.play_cost,
+            'cardnumber': self.cardnumber,
+            'main_effect': self.main_effect,
+            'image_url': self.image_url
+        }
         
     
 class MainDecklist(db.Model):
