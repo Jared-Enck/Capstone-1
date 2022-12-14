@@ -2,7 +2,7 @@ from flask_cors import CORS
 from flask import Flask, redirect, render_template, request, flash, jsonify, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Card, MainDecklist, MainDeckCard, EggDecklist, EggDeckCard, SideDecklist, SideDeckCard, Deck, SharedDeck
+from models import db, connect_db, User, Card, MainDecklist, EggDecklist, SideDecklist, Deck, SharedDeck
 from forms import RegisterForm, LoginForm, EditUserForm,AdvancedSearchForm
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///digimon_tcg_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = '3f44cd49d69e821aa140f13a49f432b073e311a264583ab7ed4340b714da0db8'
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
@@ -152,9 +152,8 @@ def show_card(number):
     
     stat_list = Card.get_detail_stats(card)
     
-    serialized_stats = Card.serialize_stats(card)
-    
     if request.method == 'PATCH':
+        serialized_stats = Card.serialize_stats(card)
         return jsonify(serialized_stats)
     
     return render_template('/card/card_details.html', card=card, stat_list=stat_list)
@@ -177,14 +176,34 @@ def user_decks():
     decks = Deck.user_decks(current_user)
     
     adv_form = AdvancedSearchForm()
+    
+    if request.method == 'POST':
+        
+        deck = request.get_json()
+
+        decklist_ids = Deck.create_decklists(deck)
+        
+        new_deck = Deck(
+                        name=deck['name'],
+                        user_id=current_user.id,
+                        main_decklist_id=decklist_ids['main_id'],
+                        egg_decklist_id=decklist_ids['egg_id'],
+                        side_decklist_id=decklist_ids['side_id']
+                        )
+        
+        db.session.add(new_deck)
+        db.session.commit()
+        
+        flash(f'Saved new deck {new_deck.name}', 'success')
+        
+        return redirect(url_for('homepage'))
         
     return render_template('/deck/decks.html', decks=decks,adv_form=adv_form)
 
-# @app.route('/deck_builder', methods=['GET','POST'])
-# @login_required
-# def show_deck_builder():
-#     """Shows deck builder or saves deck form."""
+@app.route('/decks/<int:deck_id>')
+def show_deck(deck_id):
+    """Shows deck, or allows deck owner to edit."""
     
-#     adv_form = AdvancedSearchForm()
+    deck = Deck.query.get_or_404(deck_id)
     
-#     return render_template('/deck/deck_builder.html', adv_form=adv_form)
+    return render_template('/deck/deck_details.html',deck=deck)

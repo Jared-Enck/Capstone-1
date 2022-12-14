@@ -4,12 +4,12 @@
 
 {% block content %}
 <div class="container-sm-fluid">
-    <div class="row">
+    <div class="row mx-0">
         <div id="list-decks" class="col-2 bg-secondary p-0">
             {% if decks %}
             <ul class="container-sm">
                 {% for deck in decks %}
-                <li class="row justify-content-center m-2">
+                <li class="row justify-content-center mx-0">
                     <div class="card col-12 p-0 text-center">
                         <img id="list-deck-img" src="{{ highest_dp_card_img(main_cards(deck.main_decklist_id)) }}" alt="" class="card-img-top">
                         <a href="/decks/{{ deck.id }}"
@@ -26,9 +26,9 @@
             </ul>
             {% endif %}
         </div>
-        <div class="col-10 p-2 mt-3">
+        <div class="col-10 mt-3">
             <div class="container-sm-fluid">
-                <div id="pre-DB-content" class="row justify-content-center">
+                <div id="pre-DB-content" class="row mx-0 justify-content-center">
                     {% if decks | length == 0 %}
                     <h2 class="text-center">Don't have any decks yet?</h2>
                     <h5 class="text-center m-2">
@@ -58,7 +58,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="DB" class="row d-none justify-content-center">
+                <div id="DB" class="row d-none mx-0 justify-content-center">
                     <h2>
                         Deck Builder
                     </h2>
@@ -88,9 +88,12 @@
                         </select>
                     </div>
                     <div class="row justify-content-center">
-                        <div class="list-cards db-search-results col-12">
+                        <div class="list-cards db-search-results">
                         </div>
-                
+                        <form id="save-deck" class="col-5 d-flex m-3">
+                            <input type="text" placeholder="Name your deck" name="deck-name" id="deck-name" class="form-control">
+                            <button class="btn btn-md btn-success form-control">Save Deck</button>
+                        </form>
                         <ul class="list-group p-0">
                             <li class="list-group-item bg-light p-1 d-flex">
                                 <h2 class="m-0">
@@ -102,6 +105,9 @@
                                     </span>
                                     /50
                                 </span>
+                                <button id="clear-main" class="btn btn-sm btn-basic">
+                                    <i class="fa-sharp fa-solid fa-rotate"></i>
+                                </button>
                             </li>
                             <li data-deck-type="main" class="list-group-item main-deck decklist-area">
                 

@@ -129,11 +129,19 @@ createCardHTML = (card) => {
 
 handleSearch = (res) => {
     let cards = res.data
-    
-    cards.forEach(card => {
-        let newCard = $(createCardHTML(card))
-        $('.list-cards').append(newCard);
-    })
+
+    if (cards.length < 5) {
+        cards.forEach(card => {
+            let newCard = $(createCardHTML(card)).attr('style','min-width: 220px')
+            $('.list-cards').append(newCard);
+        })
+    } else {
+        cards.forEach(card => {
+            let newCard = $(createCardHTML(card))
+            $('.list-cards').append(newCard);
+        })
+
+    }
 }
 
 handleCardClick = (e) => {
@@ -161,11 +169,20 @@ class Deck {
             sideDeck: []
         }
     }
-    startDB = () => {    
+    startDB = () => {
+        $('#search-button').addClass('d-none')
+
         this.handleDBCardClick = this.handleClick.bind(this)
         $('.db-search-results').on('click','img', this.handleDBCardClick)
+
         this.handledecklistClick = this.decklistClick.bind(this)
         $('.decklist-area').on('click', 'img', this.handledecklistClick)
+
+        this.handleClearMain = this.clearMainDeck.bind(this)
+        $('#clear-main').on('click', this.handleClearMain)
+
+        this.handleSave = this.saveDeck.bind(this)
+        $('#save-deck').on('submit', this.handleSave)
     }
     mDeckLength() {
         return this.decklist.mainDeck.length < this.mainLimit
@@ -259,6 +276,12 @@ class Deck {
             return this.decklist.sideDeck.splice(idx,1)
         }
     }
+    clearMainDeck(e) {
+        e.preventDefault();
+        this.decklist.mainDeck.length = 0;
+        $('#MD-count').html('0');
+        $('.main-deck').empty();
+    }
     async handleClick(e) {
         const cardNum = $(e.target).closest('div').attr('data-card-num')
 
@@ -287,6 +310,26 @@ class Deck {
 
         this.removeCard(cardNum,deckType)
         $($(e.target).parent().remove())
+    }
+    async saveDeck(e) {
+        e.preventDefault();
+
+        const data = {
+            name: $('#deck-name').val(),
+            decklist: this.decklist
+        }
+
+        console.log(data)
+        if (this.decklist.mainDeck.length === 50) {
+            const request = await axios({
+                    method: 'post',
+                    url: '/decks',
+                    data: data
+            })
+            return request
+        } else {
+            console.log('Main Deck must have 50 cards.')
+        }
     }
 }
 

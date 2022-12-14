@@ -209,10 +209,7 @@ class Card(db.Model):
     """Card."""
     
     __tablename__ = 'cards'
-    
-    id = db.Column(db.Integer, 
-                   primary_key=True, 
-                   autoincrement=True)
+
     name = db.Column(db.Text, 
                      nullable=False)
     type = db.Column(db.Text, 
@@ -238,6 +235,7 @@ class Card(db.Model):
     dp = db.Column(db.Text, 
                    nullable=True)
     cardnumber = db.Column(db.Text, 
+                           primary_key=True,
                            nullable=False)
     main_effect = db.Column(db.Text, 
                            nullable=True)
@@ -249,15 +247,15 @@ class Card(db.Model):
                           nullable=False)
     
     def __repr__(self):
-        return f"<Card #{self.id}: {self.name}, {self.color}, {self.cardnumber}>"
+        return f"<Card: {self.name}, {self.color}, {self.cardnumber}>"
     
     @classmethod
-    def decklists(cls, card_id):
+    def decklists(cls, card_num):
         """Get decklists associated with card."""
         
         main_decklists = db.session.query(MainDecklist).\
             join(MainDeckCard).filter(
-                MainDeckCard.card_id == card_id).all()
+                MainDeckCard.m_card_num == card_num).all()
         
         return main_decklists
     
@@ -280,7 +278,6 @@ class Card(db.Model):
         """Serialize card stats for deck builder."""
         
         return {
-            'id' : self.id,
             'name': self.name,
             'type': self.type,
             'color': self.color,
@@ -334,8 +331,8 @@ class MainDeckCard(db.Model):
                              ForeignKey('main_decklists.id', 
                              ondelete='cascade'))
     
-    m_card_id = db.Column(db.Integer, 
-                             ForeignKey('cards.id', 
+    m_card_num = db.Column(db.Text, 
+                             ForeignKey('cards.cardnumber', 
                              ondelete='cascade'))
     
 class EggDecklist(db.Model):
@@ -371,8 +368,8 @@ class EggDeckCard(db.Model):
                              ForeignKey('egg_decklists.id', 
                              ondelete='cascade'))
     
-    e_card_id = db.Column(db.Integer, 
-                             ForeignKey('cards.id', 
+    e_card_num = db.Column(db.Text, 
+                             ForeignKey('cards.cardnumber', 
                              ondelete='cascade'))
     
 class SideDecklist(db.Model):
@@ -408,8 +405,8 @@ class SideDeckCard(db.Model):
                              ForeignKey('side_decklists.id', 
                              ondelete='cascade'))
     
-    e_card_id = db.Column(db.Integer, 
-                             ForeignKey('cards.id', 
+    e_card_num = db.Column(db.Text, 
+                             ForeignKey('cards.cardnumber', 
                              ondelete='cascade'))
 
 class Deck(db.Model):
@@ -449,6 +446,42 @@ class Deck(db.Model):
         decks = Deck.query.filter(Deck.user_id == current_user.id).all()
         
         return decks
+    
+    def create_decklists(deck_obj):
+        """Takes deck obj and creates decklists for main, egg, and side."""
+        
+        MD = MainDecklist()
+        ED = EggDecklist()
+        SD = SideDecklist()
+        
+        db.session.add(MD)
+        db.session.add(ED)
+        db.session.add(SD)
+        
+        db.session.commit()
+        
+        for card_num in deck_obj['decklist']['mainDeck']:
+            m_card = MainDeckCard(main_decklist_id=MD.id, m_card_num=card_num)
+            
+            db.session.add(m_card)
+            
+        for card_num in deck_obj['decklist']['eggDeck']:
+            e_card = EggDeckCard(egg_decklist_id=ED.id, e_card_num=card_num)
+            
+            db.session.add(e_card)
+            
+        for card_num in deck_obj['decklist']['sideDeck']:
+            s_card = SideDeckCard(side_decklist_id=SD.id, s_card_num=card_num)
+            
+            db.session.add(s_card)
+
+        db.session.commit()
+        
+        return {
+            'main_id': MD.id,
+            'egg_id': ED.id,
+            'side_id': SD.id
+        }
     
 class UserDeck(db.Model):
     """User decks."""

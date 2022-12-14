@@ -82,7 +82,7 @@ body {
 .list-cards {
     display: grid;
     gap: 2em;
-    grid-template-columns: repeat(5,minmax(10em, 1fr));
+    grid-template-columns: repeat(5,1fr);
     min-width: 0px;
     padding-bottom: 1em;
 }
@@ -93,6 +93,7 @@ body {
     width: 102%;
     height: 102%;
     border: none;
+    min-width: 6rem;
     border-radius: 4%;
     box-shadow: .2em .1em .1em rgba(0, 0, 0, 0.2);
     transition: 250ms ease-out;
@@ -149,6 +150,9 @@ body {
 
 #list-decks {
     height: 60vh;
+    min-width: 200px;
+    max-width: 320px;
+    overflow: auto;
 }
 #list-decks li {
     border: none;
@@ -175,6 +179,12 @@ body {
 #adv-search .filter {
     max-width:10em;
 }
+#pre-DB-content{
+    max-width: 1200px;
+}
+#DB {
+    max-width: 1200px;
+}
 
 .filter {
     margin-right: .7em;
@@ -186,6 +196,9 @@ body {
     z-index: 1;
 }
 .db-search-results {
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    gap: 1.5em;
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 7px;
     height: 45vw;
@@ -197,9 +210,18 @@ body {
 
 .decklist-area {
     display: grid;
-    height: 20vh;
-    gap: 2em;
-    grid-template-columns: repeat(5,minmax(10em, 1fr));
+    height: 25vh;
+    gap: 1.5em;
+    grid-template-columns: repeat(8,1fr);
+    overflow:auto;
     min-width: 0px;
     padding-bottom: 1em;
+}
+
+.decklist-area .search-card {
+    max-width: 6rem;
+    max-height: 8.5rem;
+}
+#clear-main {
+    border: none;
 }
