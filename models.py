@@ -209,7 +209,7 @@ class Card(db.Model):
     """Card."""
     
     __tablename__ = 'cards'
-
+    
     name = db.Column(db.Text, 
                      nullable=False)
     type = db.Column(db.Text, 
@@ -297,19 +297,16 @@ class MainDecklist(db.Model):
                    primary_key=True, 
                    autoincrement=True)
     
-    @classmethod
-    def main_cards(cls, main_decklist_id):
+    def main_cards(main_decklist_id):
         """Get all cards in main decklist."""
         
-        m_cards = db.session.query(Card).\
-            join(MainDeckCard).filter(
+        m_cards = db.session.query(Card).join(MainDeckCard).filter(
                 MainDeckCard.main_decklist_id == main_decklist_id
             ).all()
         
         return m_cards
     
-    @classmethod
-    def highest_dp_card_img(cls, main_cards):
+    def highest_dp_card_img(main_cards):
         """Get highest dp card in main cards."""
         
         dp_sorted_cards = [card for card in main_cards if card.type == 'Digimon']
@@ -332,8 +329,8 @@ class MainDeckCard(db.Model):
                              ondelete='cascade'))
     
     m_card_num = db.Column(db.Text, 
-                             ForeignKey('cards.cardnumber', 
-                             ondelete='cascade'))
+                           ForeignKey('cards.cardnumber'))
+    qty = db.Column(db.Integer)
     
 class EggDecklist(db.Model):
     """Egg decklist."""
@@ -344,12 +341,10 @@ class EggDecklist(db.Model):
                    primary_key=True, 
                    autoincrement=True)
     
-    @classmethod
-    def egg_cards(cls, egg_decklist_id):
+    def egg_cards(egg_decklist_id):
         """Get all cards in egg decklist."""
         
-        cards = db.session.query(Card).\
-            join(EggDeckCard).filter(
+        cards = db.session.query(Card).join(EggDeckCard).filter(
                 EggDeckCard.egg_decklist_id == egg_decklist_id
             ).all()
         
@@ -369,8 +364,8 @@ class EggDeckCard(db.Model):
                              ondelete='cascade'))
     
     e_card_num = db.Column(db.Text, 
-                             ForeignKey('cards.cardnumber', 
-                             ondelete='cascade'))
+                           ForeignKey('cards.cardnumber'))
+    qty = db.Column(db.Integer)
     
 class SideDecklist(db.Model):
     """Side decklist."""
@@ -381,12 +376,10 @@ class SideDecklist(db.Model):
                    primary_key=True, 
                    autoincrement=True)
     
-    @classmethod
-    def side_cards(cls, side_decklist_id):
+    def side_cards(side_decklist_id):
         """Get all cards in side decklist."""
         
-        s_cards = db.session.query(Card).\
-            join(SideDeckCard).filter(
+        s_cards = db.session.query(Card).join(SideDeckCard).filter(
                 SideDeckCard.side_decklist_id == side_decklist_id
             ).all()
         
@@ -406,8 +399,8 @@ class SideDeckCard(db.Model):
                              ondelete='cascade'))
     
     e_card_num = db.Column(db.Text, 
-                             ForeignKey('cards.cardnumber', 
-                             ondelete='cascade'))
+                           ForeignKey('cards.cardnumber'))
+    qty = db.Column(db.Integer)
 
 class Deck(db.Model):
     """Deck."""
@@ -461,17 +454,17 @@ class Deck(db.Model):
         db.session.commit()
         
         for card_num in deck_obj['decklist']['mainDeck']:
-            m_card = MainDeckCard(main_decklist_id=MD.id, m_card_num=card_num)
+            m_card = MainDeckCard(main_decklist_id=MD.id, m_card_num=card_num,qty=card_num)
             
             db.session.add(m_card)
             
         for card_num in deck_obj['decklist']['eggDeck']:
-            e_card = EggDeckCard(egg_decklist_id=ED.id, e_card_num=card_num)
+            e_card = EggDeckCard(egg_decklist_id=ED.id, e_card_num=card_num,qty=card_num)
             
             db.session.add(e_card)
             
         for card_num in deck_obj['decklist']['sideDeck']:
-            s_card = SideDeckCard(side_decklist_id=SD.id, s_card_num=card_num)
+            s_card = SideDeckCard(side_decklist_id=SD.id, s_card_num=card_num,qty=card_num)
             
             db.session.add(s_card)
 

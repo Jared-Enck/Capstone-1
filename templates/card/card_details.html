@@ -43,10 +43,15 @@
                     </h4>
                 </li>
                 <li class="list-group-item">
+                    {% if card.main_effect != None %}
                     <p>
                         {{ card.main_effect }}
                     </p>
+                    {% endif %}
                     {% if card.source_effect != None %}
+                    <h5>
+                        Inherited Effect
+                    </h5>
                     <p>
                         {{ card.source_effect }}
                     </p>

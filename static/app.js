@@ -164,12 +164,12 @@ class Deck {
         this.sideLimit = sideLimit
         this.cardLimit = cardLimit
         this.decklist = {
-            mainDeck: [],
-            eggDeck: [],
-            sideDeck: []
+            mainDeck: {},
+            eggDeck: {},
+            sideDeck: {}
         }
     }
-    startDB = () => {
+    startDB() {
         $('#search-button').addClass('d-none')
 
         this.handleDBCardClick = this.handleClick.bind(this)
@@ -184,35 +184,41 @@ class Deck {
         this.handleSave = this.saveDeck.bind(this)
         $('#save-deck').on('submit', this.handleSave)
     }
+    sumCards(obj) {
+        return Object.values(obj).reduce((a,b) => a + b, 0)
+    }
     mDeckLength() {
-        return this.decklist.mainDeck.length < this.mainLimit
+        return this.sumCards(this.decklist.mainDeck) < this.mainLimit
     }
     eDeckLength() {
-        return this.decklist.eggDeck.length < this.eggLimit
+        return this.sumCards(this.decklist.eggDeck) < this.eggLimit
     }
     sDeckLength() {
-        return this.decklist.sideDeck.length < this.sideLimit
+        return this.sumCards(this.decklist.sideDeck) < this.sideLimit
     }
     checkInstancesOfCard(cardNum, isEgg) {
         const {cardLimit,decklist} = this
-        
+
+        const sideDeckCount = decklist.sideDeck[`${cardNum}`] || 0
+
         if (isEgg) {
-            const eggSideArry = decklist.eggDeck.concat(decklist.sideDeck)
-
-            const eggCardCount = eggSideArry.filter(val => {
-                return val === cardNum
-            })
-
-            return eggCardCount.length < cardLimit
-
+            let eggCardCount = decklist.eggDeck[`${cardNum}`] || 0
+            
+            if (!eggCardCount) {
+                return true
+            } else {
+                eggCardCount += sideDeckCount
+                return eggCardCount < cardLimit
+            }
         } else {
-            const mainSideArry = decklist.mainDeck.concat(decklist.sideDeck)
-
-            const mainCardCount = mainSideArry.filter(val => {
-                return val === cardNum
-            })
-
-            return mainCardCount.length < cardLimit
+            let mainCardCount = decklist.mainDeck[`${cardNum}`] || 0
+            
+            if (!mainCardCount) {
+                return true
+            } else {
+                mainCardCount += sideDeckCount
+                return mainCardCount < cardLimit
+            }
         }
     }
     mainCardSorter(cardNum,cardData,isEgg) {
@@ -222,7 +228,8 @@ class Deck {
             if (!this.eDeckLength()) {
                 console.log('Deck can have only 5 egg cards.')
             } else {
-                this.decklist.eggDeck.push(cardNum)
+                const eDeck = this.decklist.eggDeck
+                eDeck[`${cardNum}`] = eDeck[`${cardNum}`] + 1 || 1;
                 let count = parseInt($('#ED-count').html())
                 count ++;
                 $('#ED-count').html(count)
@@ -232,13 +239,15 @@ class Deck {
             if (!this.mDeckLength()) {
                 console.log('Deck can have only 50 main cards.')
             } else {
-                this.decklist.mainDeck.push(cardNum)
+                const mDeck = this.decklist.mainDeck
+                mDeck[`${cardNum}`] = mDeck[`${cardNum}`] + 1 || 1;
                 let count = parseInt($('#MD-count').html())
                 count ++;
                 $('#MD-count').html(count)
                 $('.main-deck').append(card)
             }
         }
+        console.log(this.decklist)
     }
     sideCardSorter(cardNum,cardData) {
         const card = createCardHTML(cardData)
@@ -246,7 +255,8 @@ class Deck {
         if (!this.sDeckLength()) {
             console.log('Deck can have only 10 side cards.')
         } else {
-            this.decklist.sideDeck.push(cardNum)
+            const sDeck = this.decklist.sideDeck
+            sDeck[`${cardNum}`] = sDeck[`${cardNum}`] + 1 || 1;
             let count = parseInt($('#SD-count').html())
             count ++;
             $('#SD-count').html(count)
@@ -254,33 +264,41 @@ class Deck {
         }
     }
     removeCard(cardNum, deckType) {
-        if (deckType === 'main') {
-            const idx =  this.decklist.mainDeck.indexOf(cardNum)
-            let count = parseInt($('#MD-count').html())
-            count --;
-            $('#MD-count').html(count)
-            return this.decklist.mainDeck.splice(idx,1)
+
+        const DL =  this.decklist[`${deckType}`]
+
+        if (DL[`${cardNum}`] > 0) {
+            DL[`${cardNum}`] -= 1;
+
+            if (deckType === 'mainDeck') {
+                let count = parseInt($('#MD-count').html())
+                count --
+                $('#MD-count').html(count)
+            }
+            if (deckType === 'eggDeck') {
+                let count = parseInt($('#ED-count').html())
+                count --
+                $('#ED-count').html(count)
+            }
+            if (deckType === 'sideDeck') {
+                let count = parseInt($('#SD-count').html())
+                count --
+                $('#SD-count').html(count)
+            }
         }
-        if (deckType === 'egg') {
-            const idx =  this.decklist.eggDeck.indexOf(cardNum)
-            let count = parseInt($('#ED-count').html())
-            count --;
-            $('#ED-count').html(count)
-            return this.decklist.eggDeck.splice(idx,1)
-        }
-        if (deckType === 'side') {
-            const idx =  this.decklist.sideDeck.indexOf(cardNum)
-            let count = parseInt($('#SD-count').html())
-            count --;
-            $('#SD-count').html(count)
-            return this.decklist.sideDeck.splice(idx,1)
+        if (DL[`${cardNum}`] === 0) {
+            return delete DL[`${cardNum}`]
         }
     }
     clearMainDeck(e) {
         e.preventDefault();
-        this.decklist.mainDeck.length = 0;
         $('#MD-count').html('0');
         $('.main-deck').empty();
+        const mDeck = this.decklist.mainDeck
+
+        for (let cardNum in mDeck) {
+            delete mDeck[cardNum]
+        }
     }
     async handleClick(e) {
         const cardNum = $(e.target).closest('div').attr('data-card-num')
@@ -320,13 +338,12 @@ class Deck {
         }
 
         console.log(data)
-        if (this.decklist.mainDeck.length === 50) {
-            const request = await axios({
+        if (this.sumCards(this.decklist.mainDeck) === 50) {
+            await axios({
                     method: 'post',
                     url: '/decks',
                     data: data
             })
-            return request
         } else {
             console.log('Main Deck must have 50 cards.')
         }
