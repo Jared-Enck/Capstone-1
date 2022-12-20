@@ -157,6 +157,21 @@ $('#deck-builder-btn').on('click', (e) => {
     new Deck(50,5,10,4).startDB()
 })
 
+createDeckHTML = (deckData) => {
+    const deck = deckData.deck
+    
+    return `
+    <li class="row justify-content-center m-2">
+        <div class="card col-12 p-0 text-center">
+            <img src="${deck.HDP_deck_img}" alt="" class="card-img-top">
+            <a href="/decks/${deck.id}" class="text-light card-img-overlay">
+                ${deck.name}
+            </a>
+        </div>
+    </li>
+    `
+}
+
 class Deck {
     constructor(mainLimit,eggLimit,sideLimit,cardLimit) {
         this.mainLimit = mainLimit
@@ -199,22 +214,22 @@ class Deck {
     checkInstancesOfCard(cardNum, isEgg) {
         const {cardLimit,decklist} = this
 
-        const sideDeckCount = decklist.sideDeck[`${cardNum}`] || 0
-
+        let sideDeckCount = decklist.sideDeck[`${cardNum}`] || 0
+        let eggCardCount = decklist.eggDeck[`${cardNum}`] || 0
+        let mainCardCount = decklist.mainDeck[`${cardNum}`] || 0
+        
         if (isEgg) {
-            let eggCardCount = decklist.eggDeck[`${cardNum}`] || 0
-            
-            if (!eggCardCount) {
-                return true
+            if (sideDeckCount) {
+                sideDeckCount += eggCardCount
+                return sideDeckCount < cardLimit
             } else {
                 eggCardCount += sideDeckCount
                 return eggCardCount < cardLimit
             }
         } else {
-            let mainCardCount = decklist.mainDeck[`${cardNum}`] || 0
-            
-            if (!mainCardCount) {
-                return true
+            if (sideDeckCount) {
+                sideDeckCount += mainCardCount
+                return sideDeckCount < cardLimit
             } else {
                 mainCardCount += sideDeckCount
                 return mainCardCount < cardLimit
@@ -329,6 +344,27 @@ class Deck {
         this.removeCard(cardNum,deckType)
         $($(e.target).parent().remove())
     }
+    startNewDB = () => {
+        clearForm()
+        $('#MD-count').html('0');
+        $('#ED-count').html('0');
+        $('#SD-count').html('0');
+        $('.decklist-area').empty();
+
+        const MD = this.decklist.mainDeck
+        const ED = this.decklist.eggDeck
+        const SD = this.decklist.sideDeck
+
+        for (let cardNum in MD) {
+            delete MD[cardNum]
+        }
+        for (let cardNum in ED) {
+            delete ED[cardNum]
+        }
+        for (let cardNum in SD) {
+            delete SD[cardNum]
+        }
+    }
     async saveDeck(e) {
         e.preventDefault();
 
@@ -337,13 +373,22 @@ class Deck {
             decklist: this.decklist
         }
 
-        console.log(data)
-        if (this.sumCards(this.decklist.mainDeck) === 50) {
-            await axios({
+        if (this.sumCards(this.decklist.mainDeck) <= 50) {
+            const newDeckResp = await axios({
                     method: 'post',
                     url: '/decks',
                     data: data
+            }).then((resp) => {
+                return resp.data
+            }).catch((err) => {
+                console.log(err)
             })
+
+            const newDeck = createDeckHTML(newDeckResp)
+            $('#list-decks').append(newDeck)
+            
+            this.startNewDB()
+
         } else {
             console.log('Main Deck must have 50 cards.')
         }

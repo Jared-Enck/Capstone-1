@@ -181,29 +181,42 @@ def user_decks():
         
         deck = request.get_json()
 
-        decklist_ids = Deck.create_decklists(deck)
+        decklist_ids = Deck.create_decklists()
+        
+        Deck.generate_decklist_cards(decklist_ids,deck)
+        
+        deck_img = MainDecklist.highest_dp_card_img(MainDecklist.main_cards(decklist_ids['main_id']))
         
         new_deck = Deck(
                         name=deck['name'],
                         user_id=current_user.id,
                         main_decklist_id=decklist_ids['main_id'],
                         egg_decklist_id=decklist_ids['egg_id'],
-                        side_decklist_id=decklist_ids['side_id']
+                        side_decklist_id=decklist_ids['side_id'],
+                        HDP_deck_img=deck_img
                         )
         
         db.session.add(new_deck)
         db.session.commit()
         
-        flash(f'Saved new deck {new_deck.name}', 'success')
-        
-        return redirect(url_for('homepage'))
+        serialized = new_deck.serialize_deck()
+                
+        return (jsonify(deck=serialized), 201)
         
     return render_template('/deck/decks.html', decks=decks,adv_form=adv_form)
 
-@app.route('/decks/<int:deck_id>')
+@app.route('/decks/<int:deck_id>', methods=['GET','PATCH','DELETE'])
 def show_deck(deck_id):
     """Shows deck, or allows deck owner to edit."""
     
     deck = Deck.query.get_or_404(deck_id)
+    
+    if request.method == 'DELETE':
+        print('***************')
+        print('working?')
+        db.session.delete(deck)
+        db.session.commit()
+        
+        return redirect(url_for(user_decks))
     
     return render_template('/deck/deck_details.html',deck=deck)

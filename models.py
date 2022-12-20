@@ -344,11 +344,11 @@ class EggDecklist(db.Model):
     def egg_cards(egg_decklist_id):
         """Get all cards in egg decklist."""
         
-        cards = db.session.query(Card).join(EggDeckCard).filter(
+        e_cards = db.session.query(Card).join(EggDeckCard).filter(
                 EggDeckCard.egg_decklist_id == egg_decklist_id
             ).all()
         
-        return cards
+        return e_cards
         
 class EggDeckCard(db.Model):
     """Card assigned to a egg deck id."""
@@ -398,7 +398,7 @@ class SideDeckCard(db.Model):
                              ForeignKey('side_decklists.id', 
                              ondelete='cascade'))
     
-    e_card_num = db.Column(db.Text, 
+    s_card_num = db.Column(db.Text, 
                            ForeignKey('cards.cardnumber'))
     qty = db.Column(db.Integer)
 
@@ -430,8 +430,23 @@ class Deck(db.Model):
                         ForeignKey('side_decklists.id', 
                                       ondelete='cascade'))
     
+    HDP_deck_img = db.Column(db.Text)
+    
     def __repr__(self):
         return f"<Deck #{self.id}: {self.name}, {self.user_id}>"
+    
+    def serialize_deck(self):
+        """Deck obj to dict."""
+        
+        return {
+            'id': self.id,
+            'name': self.name,
+            'user_id': self.user_id,
+            'main_decklist_id': self.main_decklist_id,
+            'egg_decklist_id': self.egg_decklist_id,
+            'side_decklist_id': self.side_decklist_id,
+            'HDP_deck_img': self.HDP_deck_img
+        }
     
     def user_decks(current_user):
         """Get all decks for current user."""
@@ -440,8 +455,8 @@ class Deck(db.Model):
         
         return decks
     
-    def create_decklists(deck_obj):
-        """Takes deck obj and creates decklists for main, egg, and side."""
+    def create_decklists():
+        """Create decklists for main, egg, and side."""
         
         MD = MainDecklist()
         ED = EggDecklist()
@@ -453,28 +468,40 @@ class Deck(db.Model):
         
         db.session.commit()
         
-        for card_num in deck_obj['decklist']['mainDeck']:
-            m_card = MainDeckCard(main_decklist_id=MD.id, m_card_num=card_num,qty=card_num)
-            
-            db.session.add(m_card)
-            
-        for card_num in deck_obj['decklist']['eggDeck']:
-            e_card = EggDeckCard(egg_decklist_id=ED.id, e_card_num=card_num,qty=card_num)
-            
-            db.session.add(e_card)
-            
-        for card_num in deck_obj['decklist']['sideDeck']:
-            s_card = SideDeckCard(side_decklist_id=SD.id, s_card_num=card_num,qty=card_num)
-            
-            db.session.add(s_card)
-
-        db.session.commit()
-        
         return {
             'main_id': MD.id,
             'egg_id': ED.id,
             'side_id': SD.id
         }
+        
+    def generate_decklist_cards(decklists, deck_obj):
+        """Save cards to each decklist."""
+
+        m_deck = deck_obj['decklist']['mainDeck']
+        e_deck = deck_obj['decklist']['eggDeck']
+        s_deck = deck_obj['decklist']['sideDeck']
+        
+        for card_num, qty in m_deck.items():
+            
+            m_card = MainDeckCard(main_decklist_id=decklists['main_id'], m_card_num=card_num, qty=qty)
+            
+            db.session.add(m_card)
+        
+        if e_deck:
+            
+            for card_num, qty in e_deck.items():
+                e_card = EggDeckCard(egg_decklist_id=decklists['egg_id'], e_card_num=card_num,qty=qty)
+                
+                db.session.add(e_card)
+        
+        if s_deck:
+        
+            for card_num, qty in s_deck.items():
+                s_card = SideDeckCard(side_decklist_id=decklists['side_id'], s_card_num=card_num,qty=qty)
+                
+                db.session.add(s_card)
+
+        db.session.commit()
     
 class UserDeck(db.Model):
     """User decks."""

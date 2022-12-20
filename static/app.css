@@ -148,28 +148,24 @@ body {
 
 /* ######## decks ######## */
 
-#list-decks {
+#decks {
     height: 60vh;
     min-width: 200px;
     max-width: 320px;
     overflow: auto;
 }
-#list-decks li {
+#decks li {
     border: none;
     border-radius: 5%;
 }
-#list-decks .card {
+#decks .card {
     border: none;
     height: 4em;
     overflow: hidden;
     display: flex;
 }
-#list-decks a {
+#decks a {
     text-decoration: none;
-}
-#list-decks-img .card-img-top {
-    width: 100%;
-    object-fit: contain;
 }
 
 .card-img-overlay {

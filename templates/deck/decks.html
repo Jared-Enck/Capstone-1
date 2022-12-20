@@ -5,15 +5,14 @@
 {% block content %}
 <div class="container-sm-fluid">
     <div class="row mx-0">
-        <div id="list-decks" class="col-2 bg-secondary p-0">
+        <div id="decks" class="col-2 bg-secondary p-0">
             {% if decks %}
-            <ul class="container-sm">
+            <ul id="list-decks" class="container-sm">
                 {% for deck in decks %}
-                <li class="row justify-content-center mx-0">
+                <li class="row justify-content-center m-2">
                     <div class="card col-12 p-0 text-center">
-                        <img id="list-deck-img" src="{{ highest_dp_card_img(main_cards(deck.main_decklist_id)) }}" alt="" class="card-img-top">
-                        <a href="/decks/{{ deck.id }}"
-                        style="background-image: url('{{ highest_dp_card_img(main_cards(deck.main_decklist_id)) }}');" class="text-light card-img-overlay">
+                        <img src="{{ highest_dp_card_img(main_cards(deck.main_decklist_id)) }}" alt="" class="card-img-top">
+                        <a href="/decks/{{ deck.id }}" class="text-light card-img-overlay">
                             {{ deck.name }}
                         </a>
                     </div>

@@ -9,12 +9,12 @@
             {{ deck.name }}
         </h1>
         {% if current_user.is_authenticated %}
-            <form action="/decks/{{ deck.id }}/edit" class="col-2 mb-2">
+            <form action="/decks/{{ deck.id }}/edit" class="col-4 col-sm-3 col-md-2 mb-2">
                 <button class="btn btn-md btn-success form-control">
                     Share Deck
                 </button>
             </form>
-            <form action="/decks/{{ deck.id }}/edit" class="col-2 mb-2">
+            <form action="/decks/{{ deck.id }}/edit" class="col-4 col-sm-3 col-md-2 mb-2">
                 <button class="btn btn-md btn-primary form-control">
                     Edit Deck
                 </button>
@@ -81,6 +81,13 @@
                 {% endfor %}
             </li>
         </ul>
+        <div class="row justify-content-center">
+            <form action="/decks/{{ deck.id }}" method="DELETE" class="col-4 col-sm-3 col-md-2">
+                <button type="submit" class="btn btn-med btn-danger form-control m-2">
+                    Delete Deck
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}
