@@ -502,6 +502,21 @@ class Deck(db.Model):
                 db.session.add(s_card)
 
         db.session.commit()
+        
+    def get_card_qtys(deck):
+        """Gets quantities for each card in decklist."""
+        
+        m_card_qtys = db.session.query(MainDeckCard.qty).filter(MainDeckCard.main_decklist_id == deck.main_decklist_id).all()
+        
+        e_card_qtys = db.session.query(EggDeckCard.qty).filter(EggDeckCard.egg_decklist_id == deck.egg_decklist_id).all()
+        
+        s_card_qtys = db.session.query(SideDeckCard.qty).filter(SideDeckCard.side_decklist_id == deck.side_decklist_id).all()
+        
+        return {
+            'mc_qtys': m_card_qtys,
+            'ec_qtys': e_card_qtys,
+            'sc_qtys': s_card_qtys
+        }
     
 class UserDeck(db.Model):
     """User decks."""
