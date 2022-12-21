@@ -167,8 +167,16 @@ body {
 #decks a {
     text-decoration: none;
 }
-
+.card-img-top {
+    margin-top: -28%;
+    margin-left: -5%;
+    width: 112%;
+    border-radius: 4%;
+}
 .card-img-overlay {
+    font-weight: bold;
+    font-size: large;
+    text-shadow: 2px 1px 1px rgba(0, 0, 0, 0.4);
     background-color: rgba(0, 0, 0, 0.3);
 }
 
@@ -206,10 +214,9 @@ body {
 
 .decklist-area {
     display: grid;
-    height: 25vh;
     gap: 1.5em;
+    min-height: 12vh;
     grid-template-columns: repeat(8,1fr);
-    overflow:auto;
     min-width: 0px;
     padding-bottom: 1em;
 }
