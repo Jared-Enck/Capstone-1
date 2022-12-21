@@ -49,6 +49,11 @@ body {
     margin: 0 auto;
 }
 
+#messages {
+    position: absolute;
+    font-size: 1.5rem;
+}
+
 /* ######## search ######## */
 
 #search-window {
