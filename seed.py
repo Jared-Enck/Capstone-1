@@ -1,5 +1,5 @@
 from app import db
-from models import Card, User, Deck, MainDeckCard, SharedDeck, MainDecklist
+from models import Card
 import requests
 
 db.drop_all()

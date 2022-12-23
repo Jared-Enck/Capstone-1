@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, EmailField, SelectField
-from wtforms.validators import Length, Optional, DataRequired, Email, URL
-from models import db, User, Deck, Comment
-    
+from wtforms.validators import Length, Optional, DataRequired, Email
+
 class RegisterForm(FlaskForm):
     """Form for adding users."""
 
