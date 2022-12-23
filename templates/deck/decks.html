@@ -5,14 +5,14 @@
 {% block content %}
 <div class="container-sm-fluid">
     <div class="row mx-0">
-        <div id="decks" class="col-2 bg-secondary p-0">
+        <div id="decks" class="col-4 col-sm-2 bg-secondary p-0">
             {% if decks %}
             <ul id="list-decks" class="container-sm">
                 {% for deck in decks %}
                 <li class="row justify-content-center m-2">
                     <div class="card col-12 p-0 text-center">
                         <img src="{{ highest_dp_card_img(main_cards(deck.main_decklist_id)) }}" alt="" class="card-img-top">
-                        <a href="/decks/{{ deck.id }}" class="text-light card-img-overlay">
+                        <a href="{{ url_for( 'show_deck', deck_id=deck.id ) }}" class="text-light card-img-overlay">
                             {{ deck.name }}
                         </a>
                     </div>
@@ -25,7 +25,7 @@
             </ul>
             {% endif %}
         </div>
-        <div class="col-10 mt-3">
+        <div class="col-8 col-sm-10 mt-3">
             <div class="container-sm-fluid">
                 <div id="pre-DB-content" class="row mx-0 justify-content-center">
                     {% if decks | length == 0 %}
@@ -34,27 +34,14 @@
                         Create one below!
                     </h5>
                     {% endif %}
-                    <button id="deck-builder-btn" class="btn btn-lg btn-primary col-3">
+                    <button id="deck-builder-btn" class="btn btn-lg btn-primary col-6 col-md-3">
                         Deck Builder
                     </button>
-                    <h2 class="text-center">
-                        Or check out these starter decks!
+                    <h2 class="text-center mt-3">
+                        Deck builder tips...
                     </h2>
                     <div class="row justify-content-center p-0">
-                        <div class="col-4 justify-content-center">
-                            <div class="card bg-light">
-                                <h4 class="card-title text-center">
-                                    Starter Deck1
-                                </h4>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="card bg-light">
-                                <h4 class="card-title text-center">
-                                    Starter Deck2
-                                </h4>
-                            </div>
-                        </div>
+        
                     </div>
                 </div>
                 <div id="DB" class="row d-none mx-0 justify-content-center">
@@ -80,7 +67,7 @@
                         </div>
                         <button class="btn btn-md btn-primary">Search</button>
                     </form>
-                    <div class="col-md-3 m-2">
+                    <div class="col-9 col-md-4 m-2">
                         <select class="form-control bg-light" name="card-sorter" id="card-sorter">
                             <option value="main">Add to Main/Egg Deck</option>
                             <option value="side">Add to Side Deck</option>
@@ -89,9 +76,9 @@
                     <div class="row justify-content-center">
                         <div class="list-cards db-search-results">
                         </div>
-                        <form id="save-deck" class="col-5 d-flex m-3">
-                            <input type="text" placeholder="Name your deck" name="deck-name" id="deck-name" class="form-control">
-                            <button class="btn btn-md btn-success form-control">Save Deck</button>
+                        <form id="save-deck" class="col-10 col-md-4 d-flex m-2 justify-content-between p-0">
+                            <input type="text" placeholder="Name your deck" name="deck-name" id="deck-name" class="form-control m-1">
+                            <button class="btn btn-md btn-success form-control m-1">Save Deck</button>
                         </form>
                         <ul class="list-group p-0">
                             <li class="list-group-item bg-light p-1 d-flex">

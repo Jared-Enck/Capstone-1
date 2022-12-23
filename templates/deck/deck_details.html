@@ -8,15 +8,15 @@
         <h1 class="text-center">
             {{ deck.name }}
         </h1>
-        {% if current_user.is_authenticated %}
-            <form action="/decks/{{ deck.id }}/edit" class="col-4 col-sm-3 col-md-2 mb-2">
-                <button class="btn btn-md btn-success form-control">
+        {% if current_user.id == deck.user_id %}
+            <form action="" class="col-4 col-sm-3 col-md-2 mb-2">
+                <button class="btn btn-md btn-primary form-control">
                     Share Deck
                 </button>
             </form>
-            <form action="/decks/{{ deck.id }}/edit" class="col-4 col-sm-3 col-md-2 mb-2">
-                <button class="btn btn-md btn-primary form-control">
-                    Edit Deck
+            <form action="{{ url_for( 'show_deck', deck_id=deck.id ) }}" method="post" class="col-4 col-sm-3 col-md-2 mb-2">
+                <button class="btn btn-md btn-outline-danger form-control">
+                    Delete Deck
                 </button>
             </form>
         {% endif %}
@@ -26,68 +26,56 @@
                 <h2 class="m-0">
                     Main Deck
                 </h2>
-                <span class="deck-counter">
-                    <span id="MD-count">
-                        {{ main_cards(deck.main_decklist_id) | length }}
-                    </span>
-                    /50
-                </span>
             </li>
             <li class="list-group-item main-deck decklist-area">
-                {% for card in main_cards(deck.main_decklist_id) %}
-                    <div data-card-num='{{ card.cardnumber }}' class='search-card'>
-                    <img class='card-img search-card-img' src='{{ card.image_url }}' alt='{{ card.name }}'>
+                {% for card,qty in main_cards %}
+                    <div data-card-num='{{ card.cardnumber }}' class='search-card d-flex'>
+                        <img class='card-img search-card-img' src='{{ card.image_url }}' alt='{{ card.name }}'>
+                        <div id="card-qty" class="text-center text-light align-self-end">
+                            {{ qty }}
+                        </div>
                     </div>
                 {% endfor %}
             </li>
         </ul>
+        {% if egg_cards | length %}
         <ul class="list-group p-0">
             <li class="list-group-item bg-light p-1 d-flex">
                 <h2 class="m-0">
                     Egg Deck
                 </h2>
-                <span class="deck-counter">
-                    <span id="ED-count">
-                        {{ egg_cards(deck.egg_decklist_id) | length }}
-                    </span>
-                    /5
-                </span>
             </li>
             <li class="list-group-item egg-deck decklist-area">
-                {% for card in egg_cards(deck.egg_decklist_id) %}
-                    <div data-card-num='{{ card.cardnumber }}' class='search-card'>
-                    <img class='card-img search-card-img' src='{{ card.image_url }}' alt='{{ card.name }}'>
+                {% for card,qty in egg_cards %}
+                    <div data-card-num='{{ card.cardnumber }}' class='search-card d-flex'>
+                        <img class='card-img search-card-img' src='{{ card.image_url }}' alt='{{ card.name }}'>
+                        <div id="card-qty" class="text-center text-light align-self-end">
+                            {{ qty }}
+                        </div>
                     </div>
                 {% endfor %}
             </li>
         </ul>
+        {% endif %}
+        {% if side_cards | length %}
         <ul class="list-group p-0">
             <li class="list-group-item bg-light p-1 d-flex">
                 <h2 class="m-0">
                     Side Deck
                 </h2>
-                <span class="deck-counter">
-                    <span id="SD-count">
-                        {{ side_cards(deck.side_decklist_id) | length }}
-                    </span>
-                    /10
-                </span>
             </li>
             <li class="list-group-item side-deck decklist-area">
-                {% for card in side_cards(deck.side_decklist_id) %}
-                    <div data-card-num='{{ card.cardnumber }}' class='search-card'>
-                    <img class='card-img search-card-img' src='{{ card.image_url }}' alt='{{ card.name }}'>
+                {% for card,qty in side_cards %}
+                    <div data-card-num='{{ card.cardnumber }}' class='search-card d-flex'>
+                        <img class='card-img search-card-img' src='{{ card.image_url }}' alt='{{ card.name }}'>
+                        <div id="card-qty" class="text-center text-light align-self-end me-auto">
+                            {{ qty }}
+                        </div>
                     </div>
                 {% endfor %}
             </li>
         </ul>
-        <div class="row justify-content-center">
-            <form action="/decks/{{ deck.id }}" method="DELETE" class="col-4 col-sm-3 col-md-2">
-                <button type="submit" class="btn btn-med btn-danger form-control m-2">
-                    Delete Deck
-                </button>
-            </form>
-        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
