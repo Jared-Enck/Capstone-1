@@ -2,7 +2,9 @@ body {
     margin: 0;
     padding: 0;
 }
-
+a {
+    text-decoration: none;
+}
 /* ######## navbar ######## */
 
 #logo {
@@ -161,7 +163,6 @@ body {
 }
 #decks li {
     border: none;
-    border-radius: 5%;
     box-shadow: .3em .2em .2em rgba(0, 0, 0, 0.2);
 }
 #decks .card {
@@ -170,14 +171,10 @@ body {
     overflow: hidden;
     display: flex;
 }
-#decks a {
-    text-decoration: none;
-}
 .card-img-top {
     margin-top: -28%;
     margin-left: -5%;
     width: 112%;
-    border-radius: 4%;
 }
 .card-img-overlay {
     font-weight: bold;
@@ -236,9 +233,23 @@ body {
     transform: none;
     box-shadow: .2em .1em .1em rgba(0, 0, 0, 0.2);
 }
-
 #clear-main {
     border: none;
+}
+#deck-banner {
+    background-position: 50% 20%;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    height: 10em;
+}
+#deck-banner-data {
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 30%;
+    height: 100%;
+}
+#deck-banner-data img {
+    width: 2.2em;
+    border: 2px solid gray;
 }
 #card-qty {
     position: absolute;

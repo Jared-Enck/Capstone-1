@@ -216,8 +216,10 @@ def show_deck(deck_id):
         
         return redirect(url_for('user_decks'))
     
-    main_cards = MainDecklist.main_cards(deck.main_decklist_id)
-    egg_cards = EggDecklist.egg_cards(deck.egg_decklist_id)
-    side_cards = SideDecklist.side_cards(deck.side_decklist_id)
+    decklist = {
+        'Main': MainDecklist.main_cards(deck.main_decklist_id),
+        'Egg': EggDecklist.egg_cards(deck.egg_decklist_id),
+        'Side': SideDecklist.side_cards(deck.side_decklist_id)
+    }
     
-    return render_template('/deck/deck_details.html',deck=deck, main_cards=main_cards,egg_cards=egg_cards,side_cards=side_cards)
+    return render_template('/deck/deck_details.html',deck=deck,decklist=decklist)
