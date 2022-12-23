@@ -2,7 +2,6 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from flask_login import UserMixin
-from sqlalchemy.orm import relationship
 from flask_bcrypt import Bcrypt
 from operator import attrgetter
 
@@ -41,11 +40,9 @@ class User(db.Model, UserMixin):
                           nullable=True, 
                           default=DEFAULT_IMG_URL)
         
-    decks = relationship('Deck', 
-                         secondary='user_decks')
+    decks = db.relationship('Deck')
     
-    comments = relationship('Comment', 
-                            secondary='user_comments')
+    shared_decks = db.relationship('SharedDeck')
     
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
@@ -84,69 +81,6 @@ class User(db.Model, UserMixin):
                 return user
 
         return False
-
-class Comment(db.Model):
-    """Comment."""
-    
-    __tablename__ = 'comments'
-    
-    id = db.Column(db.Integer, 
-                   primary_key=True, 
-                   autoincrement=True)
-    
-    user_id = db.Column(db.Integer, 
-                        ForeignKey('users.id', 
-                                      ondelete='cascade'))
-    
-    timestamp = db.Column(db.DateTime, 
-                          nullable=False, 
-                          default=datetime.utcnow())
-    
-    content = db.Column(db.String(200), 
-                        nullable=False)
-    
-    shared_deck_id = db.Column(db.Integer, 
-                        ForeignKey('shared_decks.id', 
-                                      ondelete='cascade'))
-        
-    deck = relationship('SharedDeck', backref='comments')
-    
-    def __repr__(self):
-        return f"<Comment #{self.id}: {self.user.username}, {self.timestamp}, {self.content}>"
-    
-class CommentLikes(db.Model):
-    """Mapping user likes to comments."""
-    
-    __tablename__ = 'comment_likes'
-    
-    id = db.Column(db.Integer, 
-                   primary_key=True, 
-                   autoincrement=True)
-    
-    comment_id = db.Column(db.Integer, 
-                        ForeignKey('comments.id', 
-                                      ondelete='cascade'))
-    
-    user_id = db.Column(db.Integer, 
-                        ForeignKey('users.id', 
-                                      ondelete='cascade'))
-    
-class UserComment(db.Model):
-    """User comments."""
-    
-    __tablename__ = 'user_comments'
-    
-    id = db.Column(db.Integer, 
-                   primary_key=True, 
-                   autoincrement=True)
-    
-    comment_id = db.Column(db.Integer, 
-                        ForeignKey('comments.id', 
-                                      ondelete='cascade'))
-    
-    user_id = db.Column(db.Integer, 
-                        ForeignKey('users.id', 
-                                      ondelete='cascade'))
     
 class SharedDeck(db.Model):
     """Deck shared with others by user."""
@@ -169,22 +103,12 @@ class SharedDeck(db.Model):
                           nullable=False, 
                           default=datetime.utcnow())
     
-    user = relationship('User', backref='shared_decks')
+    user = db.relationship('User')
         
     likes = db.relationship('User',
                             secondary='deck_likes')
     
-    deck = relationship('Deck', backref='shared_decks')
-    
-    @classmethod
-    def get_deck_comments(cls, shared_deck_id):
-        """Get all comments for the shared deck."""
-        
-        comments = db.session.query(Comment).filter(
-                Comment.shared_deck_id == shared_deck_id
-            ).all()
-        
-        return comments
+    deck = db.relationship('Deck')
     
 class DeckLikes(db.Model):
     """Mapping user likes to shared decks."""
@@ -249,16 +173,6 @@ class Card(db.Model):
     def __repr__(self):
         return f"<Card: {self.name}, {self.color}, {self.cardnumber}>"
     
-    @classmethod
-    def decklists(cls, card_num):
-        """Get decklists associated with card."""
-        
-        main_decklists = db.session.query(MainDecklist).\
-            join(MainDeckCard).filter(
-                MainDeckCard.m_card_num == card_num).all()
-        
-        return main_decklists
-    
     def get_detail_stats(card):
         """Returns dictionary for stats obj"""
         
@@ -300,20 +214,22 @@ class MainDecklist(db.Model):
     def main_cards(main_decklist_id):
         """Get all cards in main decklist."""
         
-        m_cards = db.session.query(Card).join(MainDeckCard).filter(
+        m_cards = db.session.query(Card,MainDeckCard.qty).join(MainDeckCard).filter(
                 MainDeckCard.main_decklist_id == main_decklist_id
             ).all()
         
         return m_cards
     
     def highest_dp_card_img(main_cards):
-        """Get highest dp card in main cards."""
+        """Get highest dp card from Tuple of card obj and qty in main cards."""
         
-        dp_sorted_cards = [card for card in main_cards if card.type == 'Digimon']
+        digimon = [card[0] for card in main_cards if card[0].type == 'Digimon']
         
-        hdp_card = max(dp_sorted_cards, key=attrgetter('dp'))
+        high_dp = max([int(card.dp) for card in digimon])
         
-        return hdp_card.image_url
+        hdp_card = [card for card in digimon if int(card.dp) == high_dp]
+        
+        return hdp_card[0].image_url
         
 class MainDeckCard(db.Model):
     """Card assigned to a main deck id."""
@@ -344,7 +260,7 @@ class EggDecklist(db.Model):
     def egg_cards(egg_decklist_id):
         """Get all cards in egg decklist."""
         
-        e_cards = db.session.query(Card).join(EggDeckCard).filter(
+        e_cards = db.session.query(Card,EggDeckCard.qty).join(EggDeckCard).filter(
                 EggDeckCard.egg_decklist_id == egg_decklist_id
             ).all()
         
@@ -379,7 +295,7 @@ class SideDecklist(db.Model):
     def side_cards(side_decklist_id):
         """Get all cards in side decklist."""
         
-        s_cards = db.session.query(Card).join(SideDeckCard).filter(
+        s_cards = db.session.query(Card,SideDeckCard.qty).join(SideDeckCard).filter(
                 SideDeckCard.side_decklist_id == side_decklist_id
             ).all()
         
@@ -448,13 +364,6 @@ class Deck(db.Model):
             'HDP_deck_img': self.HDP_deck_img
         }
     
-    def user_decks(current_user):
-        """Get all decks for current user."""
-        
-        decks = Deck.query.filter(Deck.user_id == current_user.id).all()
-        
-        return decks
-    
     def create_decklists():
         """Create decklists for main, egg, and side."""
         
@@ -502,35 +411,3 @@ class Deck(db.Model):
                 db.session.add(s_card)
 
         db.session.commit()
-        
-    def get_card_qtys(deck):
-        """Gets quantities for each card in decklist."""
-        
-        m_card_qtys = db.session.query(MainDeckCard.qty).filter(MainDeckCard.main_decklist_id == deck.main_decklist_id).all()
-        
-        e_card_qtys = db.session.query(EggDeckCard.qty).filter(EggDeckCard.egg_decklist_id == deck.egg_decklist_id).all()
-        
-        s_card_qtys = db.session.query(SideDeckCard.qty).filter(SideDeckCard.side_decklist_id == deck.side_decklist_id).all()
-        
-        return {
-            'mc_qtys': m_card_qtys,
-            'ec_qtys': e_card_qtys,
-            'sc_qtys': s_card_qtys
-        }
-    
-class UserDeck(db.Model):
-    """User decks."""
-    
-    __tablename__ = 'user_decks'
-    
-    id = db.Column(db.Integer, 
-                   primary_key=True, 
-                   autoincrement=True)
-    
-    deck_id = db.Column(db.Integer, 
-                        ForeignKey('decks.id', 
-                                      ondelete='cascade'))
-    
-    user_id = db.Column(db.Integer, 
-                        ForeignKey('users.id', 
-                                      ondelete='cascade'))
