@@ -20,6 +20,10 @@ $('#clear').on('click', (e) => {
     clearForm();
 })
 
+$('#messages').on('click', '.btn-close', () => {
+    $('#messages').remove()
+})
+
 clearForm = () => {
     $('option[value=""]').removeAttr('disabled','')
     $('.list-cards').empty()
@@ -148,25 +152,6 @@ handleCardClick = (e) => {
     const cardNum = $(e.target).closest('div').attr('data-card-num')
 
     window.location.href = '/cards/' + cardNum
-}
-
-createDeckHTML = (deckData) => {
-    const deck = deckData.deck
-    
-    return `
-    <li class="row justify-content-center m-2">
-        <div class="card col-12 p-0 text-center">
-            <img src="${deck.HDP_deck_img}" alt="" class="card-img-top">
-            <a href="/decks/${deck.id}" class="text-light card-img-overlay">
-                ${deck.name}
-            </a>
-        </div>
-    </li>
-    `
-}
-
-sumCards = (obj) => {
-    return Object.values(obj).reduce((a,b) => a + b, 0)
 }
 
 $('#deck-builder-btn').on('click', (e) => {

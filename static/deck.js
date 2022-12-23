@@ -27,14 +27,17 @@ class Deck {
         this.handleSave = this.saveDeck.bind(this)
         $('#save-deck').on('submit', this.handleSave)
     }
+    sumCards = (obj) => {
+        return Object.values(obj).reduce((a,b) => a + b, 0)
+    }
     mDeckLength() {
-        return sumCards(this.decklist.mainDeck) < this.mainLimit
+        return this.sumCards(this.decklist.mainDeck) < this.mainLimit
     }
     eDeckLength() {
-        return sumCards(this.decklist.eggDeck) < this.eggLimit
+        return this.sumCards(this.decklist.eggDeck) < this.eggLimit
     }
     sDeckLength() {
-        return sumCards(this.decklist.sideDeck) < this.sideLimit
+        return this.sumCards(this.decklist.sideDeck) < this.sideLimit
     }
     checkInstancesOfCard(cardNum, isEgg) {
         const {cardLimit,decklist} = this
@@ -190,6 +193,20 @@ class Deck {
             delete SD[cardNum]
         }
     }
+    createDeckHTML = (newDeckResp) => {
+        const deck = newDeckResp.deck
+        
+        return `
+        <li class="row justify-content-center m-2">
+            <div class="card col-12 p-0 text-center">
+                <img src="${deck.HDP_deck_img}" alt="" class="card-img-top">
+                <a href="/decks/${deck.id}" class="text-light card-img-overlay">
+                    ${deck.name}
+                </a>
+            </div>
+        </li>
+        `
+    }
     async saveDeck(e) {
         e.preventDefault();
 
@@ -198,7 +215,9 @@ class Deck {
             decklist: this.decklist
         }
 
-        if (sumCards(this.decklist.mainDeck) === 50) {
+        const main_total = this.sumCards(this.decklist.mainDeck)
+
+        if (main_total === this.mainLimit) {
             const newDeckResp = await axios({
                     method: 'post',
                     url: '/decks',
@@ -209,7 +228,7 @@ class Deck {
                 console.log(err)
             })
 
-            const newDeck = createDeckHTML(newDeckResp)
+            const newDeck = this.createDeckHTML(newDeckResp)
             $('#list-decks').append(newDeck)
             
             this.startNewDB()

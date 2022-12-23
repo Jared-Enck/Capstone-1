@@ -51,7 +51,7 @@ body {
 
 #messages {
     position: absolute;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
 }
 
 /* ######## search ######## */
@@ -99,7 +99,7 @@ body {
     height: 102%;
     border: none;
     min-width: 6rem;
-    border-radius: 4%;
+    border-radius: 4.5%;
     box-shadow: .2em .1em .1em rgba(0, 0, 0, 0.2);
     transition: 250ms ease-out;
     z-index: 1;
@@ -162,6 +162,7 @@ body {
 #decks li {
     border: none;
     border-radius: 5%;
+    box-shadow: .3em .2em .2em rgba(0, 0, 0, 0.2);
 }
 #decks .card {
     border: none;
@@ -224,12 +225,29 @@ body {
     grid-template-columns: repeat(8,1fr);
     min-width: 0px;
     padding-bottom: 1em;
+    overflow: auto;
 }
 
 .decklist-area .search-card {
     max-width: 6rem;
     max-height: 8.5rem;
 }
+.decklist-area div img:hover {
+    transform: none;
+    box-shadow: .2em .1em .1em rgba(0, 0, 0, 0.2);
+}
+
 #clear-main {
     border: none;
+}
+#card-qty {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 0px 5px 0px 5px;
+    z-index: 1;
+    width: 2em;
+    height: 2em;
+    margin-bottom: -3px;
+    padding-top: .2em;
+    box-shadow: 0 0 .1em rgba(0, 0, 0, 0.2);
 }

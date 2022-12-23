@@ -2,13 +2,13 @@ from flask_cors import CORS
 from flask import Flask, redirect, render_template, request, flash, jsonify, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Card, MainDecklist, EggDecklist, SideDecklist, Deck, SharedDeck
+from models import db, connect_db, User, Card, MainDecklist, EggDecklist, SideDecklist, Deck, SharedDeck, MainDeckCard, EggDeckCard, SideDeckCard
 from forms import RegisterForm, LoginForm, EditUserForm,AdvancedSearchForm
 
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///digimon_tcg_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///DCG_db'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
@@ -37,7 +37,6 @@ app.jinja_env.globals.update(main_cards=MainDecklist.main_cards)
 app.jinja_env.globals.update(egg_cards=EggDecklist.egg_cards)
 app.jinja_env.globals.update(side_cards=SideDecklist.side_cards)
 app.jinja_env.globals.update(highest_dp_card_img=MainDecklist.highest_dp_card_img)
-app.jinja_env.globals.update(get_deck_comments=SharedDeck.get_deck_comments)
 
 @app.route('/', methods=['GET'])
 def homepage():
@@ -74,17 +73,16 @@ def login():
     
     form = LoginForm()
     
-    if request.method == 'POST':
-        if form.validate:
-            user = User.authenticate(form.username.data,
-                                    form.password.data)
-            if user:
-                login_user(user, remember=True)
-                flash(f'Welcome back {user.username}!', 'info')
-                
-                return redirect(url_for('homepage'))
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data,
+                                form.password.data)
+        if user:
+            login_user(user, remember=True)
+            flash(f'Welcome back {user.username}!', 'info')
             
-            flash("Invalid credentials.", 'danger')
+            return redirect(url_for('homepage'))
+        
+        flash("Invalid credentials.", 'danger')
             
     return render_template('/user/login.html', form=form)
                    
@@ -172,8 +170,8 @@ def show_adv_search():
 @login_required
 def user_decks():
     """Show all decks for user and deck builder on btn click"""
-    
-    decks = Deck.user_decks(current_user)
+        
+    decks = Deck.query.filter(Deck.user_id == current_user.id).all()
     
     adv_form = AdvancedSearchForm()
     
@@ -198,25 +196,28 @@ def user_decks():
         
         db.session.add(new_deck)
         db.session.commit()
-        
+                
         serialized = new_deck.serialize_deck()
                 
         return (jsonify(deck=serialized), 201)
         
     return render_template('/deck/decks.html', decks=decks,adv_form=adv_form)
 
-@app.route('/decks/<int:deck_id>', methods=['GET','PATCH','DELETE'])
+@app.route('/decks/<int:deck_id>', methods=['GET','POST'])
 def show_deck(deck_id):
-    """Shows deck, or allows deck owner to edit."""
+    """Shows deck, or allows deck owner to share/delete."""
     
     deck = Deck.query.get_or_404(deck_id)
     
-    if request.method == 'DELETE':
-        print('***************')
-        print('working?')
+    if request.method == 'POST':
+        
         db.session.delete(deck)
         db.session.commit()
         
-        return redirect(url_for(user_decks))
+        return redirect(url_for('user_decks'))
     
-    return render_template('/deck/deck_details.html',deck=deck)
+    main_cards = MainDecklist.main_cards(deck.main_decklist_id)
+    egg_cards = EggDecklist.egg_cards(deck.egg_decklist_id)
+    side_cards = SideDecklist.side_cards(deck.side_decklist_id)
+    
+    return render_template('/deck/deck_details.html',deck=deck, main_cards=main_cards,egg_cards=egg_cards,side_cards=side_cards)
