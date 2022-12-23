@@ -10,13 +10,9 @@
 				<h2>{{ user.username }}</h2>
 			</li>
 				<div class="list-group list-group-horizontal">
-					<a href="/decks/{{ user.id }}" class="list-group-item">
+					<a href="{{ url_for( 'user_decks' ) }}" class="list-group-item">
 						<i class="fa-regular fa-cards-blank"></i>
 						{{ user.decks | length }}
-					</a>
-					<a href="/comments/{{ user.id }}" class="list-group-item">
-						<i class="fa-regular fa-comment"></i>
-						{{ user.comments | length }}
 					</a>
 					{% if current_user.id == user.id %}
 						<a href="/edit/{{ user.id }}" class="list-group-item">Edit Profile
