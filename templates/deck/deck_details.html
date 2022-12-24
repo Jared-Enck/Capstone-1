@@ -17,11 +17,18 @@
                         <a href="{{ url_for('user_details', user_id=deck.user.id) }}" class="text-light">
                             {{ deck.user.username }}
                         </a>
-                        ~ Uploaded: {{ deck.timestamp }}
+                        <i class="fa-regular fa-calendar"></i>
+                        {% if deck.is_shared %}
+                            Uploaded: {{ deck.shared[0].timestamp}}
+                        {% else %}
+                            Created: {{ deck.timestamp }}
+                        {% endif %}
                     </span>
+                    {% if deck.is_shared %}
                     <span class="ps-1">
                         <i class="fa-regular fa-thumbs-up"></i> ~deck likes~
                     </span>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -29,11 +36,13 @@
 
     <div class="row justify-content-center">
         {% if current_user.id == deck.user_id %}
-            <form action="" class="col-4 col-md-3 col-lg-2 mb-2">
+            {% if not deck.is_shared %}
+            <form action="{{ url_for( 'share_deck', deck_id=deck.id ) }}" method="post" class="col-4 col-md-3 col-lg-2 mb-2">
                 <button class="btn btn-md btn-primary form-control">
                     Share Deck
                 </button>
             </form>
+            {% endif %}
             <form action="{{ url_for( 'show_deck', deck_id=deck.id ) }}" method="post" class="col-4 col-md-3 col-lg-2 mb-2">
                 <button class="btn btn-md btn-outline-danger form-control">
                     Delete Deck

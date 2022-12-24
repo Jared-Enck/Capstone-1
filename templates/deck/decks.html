@@ -6,24 +6,24 @@
 <div class="container-sm-fluid">
     <div class="row mx-0">
         <div id="decks" class="col-4 col-sm-2 bg-secondary p-0">
-            {% if decks %}
             <ul id="list-decks" class="container-sm">
+            {% if decks %}
                 {% for deck in decks %}
-                <li class="row justify-content-center m-2">
+                <li class="row justify-content-center rounded m-2">
                     <div class="card col-12 p-0 text-center">
-                        <img src="{{ highest_dp_card_img(main_cards(deck.main_decklist_id)) }}" alt="" class="card-img-top">
-                        <a href="{{ url_for( 'show_deck', deck_id=deck.id ) }}" class="text-light card-img-overlay">
+                        <img src="{{ deck.HDP_deck_img }}" alt="" class="card-img-top">
+                        <a href="{{ url_for( 'show_deck', deck_id=deck.id ) }}" class="text-light card-img-overlay rounded">
                             {{ deck.name }}
                         </a>
                     </div>
                 </li>
                 {% endfor %}
             {% else %}
-            <li class="row m-3">
+            <div id="no-decks" class="row m-3">
                 <p class="text-dark text-center"><i>~No decks listed~</i></p>
-            </li>
-            </ul>
+            </div>
             {% endif %}
+            </ul>
         </div>
         <div class="col-8 col-sm-10 mt-3">
             <div class="container-sm-fluid">
