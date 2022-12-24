@@ -197,10 +197,10 @@ class Deck {
         const deck = newDeckResp.deck
         
         return `
-        <li class="row justify-content-center m-2">
+        <li class="row justify-content-center rounded m-2">
             <div class="card col-12 p-0 text-center">
                 <img src="${deck.HDP_deck_img}" alt="" class="card-img-top">
-                <a href="/decks/${deck.id}" class="text-light card-img-overlay">
+                <a href="/decks/${deck.id}" class="text-light card-img-overlay rounded">
                     ${deck.name}
                 </a>
             </div>
@@ -217,21 +217,26 @@ class Deck {
 
         const main_total = this.sumCards(this.decklist.mainDeck)
 
-        if (main_total === this.mainLimit) {
+        if (main_total === this.mainLimit && data.name) {
             await axios({
                     method: 'post',
                     url: '/decks',
                     data: data
             }).then((resp) => {
                 const newDeck = this.createDeckHTML(resp.data)
-                
+                $('#no-decks').remove()
                 $('#list-decks').append(newDeck)
                 this.startNewDB()
             }).catch((err) => {
                 console.log(err)
             })
         } else {
-            console.log('Main Deck must have 50 cards.')
+            if (!data.name) {
+                console.log('Enter a deck name.')
+            } else {
+                console.log('Main Deck must have 50 cards.')
+            }
+
         }
     }
 }
