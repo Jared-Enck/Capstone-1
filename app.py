@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///DCG_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = '3f44cd49d69e821aa140f13a49f432b073e311a264583ab7ed4340b714da0db8'
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
@@ -42,7 +42,7 @@ app.jinja_env.globals.update(highest_dp_card_img=MainDecklist.highest_dp_card_im
 def homepage():
     """Show homepage."""
     
-    shared_decks = SharedDeck.query.order_by(SharedDeck.timestamp.desc()).limit(10).all()
+    shared_decks = SharedDeck.query.order_by(SharedDeck.timestamp.desc()).limit(20).all()
     
     return render_template('index.html', shared_decks=shared_decks)
 
@@ -223,3 +223,22 @@ def show_deck(deck_id):
     }
     
     return render_template('/deck/deck_details.html',deck=deck,decklist=decklist)
+
+@app.route('/share/<int:deck_id>', methods=['POST'])
+@login_required
+def share_deck(deck_id):
+    """Save shared deck."""
+    
+    deck = Deck.query.get_or_404(deck_id)
+        
+    shared_deck = SharedDeck(deck_id=deck.id,
+                                user_id=deck.user.id)
+    
+    deck.is_shared = True
+    
+    db.session.add(shared_deck)
+    db.session.commit()
+    
+    flash(f'Shared new deck {deck.name}', 'success')
+    
+    return redirect(url_for('homepage'))
