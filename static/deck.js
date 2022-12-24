@@ -218,21 +218,18 @@ class Deck {
         const main_total = this.sumCards(this.decklist.mainDeck)
 
         if (main_total === this.mainLimit) {
-            const newDeckResp = await axios({
+            await axios({
                     method: 'post',
                     url: '/decks',
                     data: data
             }).then((resp) => {
-                return resp.data
+                const newDeck = this.createDeckHTML(resp.data)
+                
+                $('#list-decks').append(newDeck)
+                this.startNewDB()
             }).catch((err) => {
                 console.log(err)
             })
-
-            const newDeck = this.createDeckHTML(newDeckResp)
-            $('#list-decks').append(newDeck)
-            
-            this.startNewDB()
-
         } else {
             console.log('Main Deck must have 50 cards.')
         }

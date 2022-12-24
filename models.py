@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from flask_login import UserMixin
 from flask_bcrypt import Bcrypt
-from operator import attrgetter
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -40,9 +39,11 @@ class User(db.Model, UserMixin):
                           nullable=True, 
                           default=DEFAULT_IMG_URL)
         
-    decks = db.relationship('Deck')
+    decks = db.relationship('Deck', cascade='all, delete')
     
-    shared_decks = db.relationship('SharedDeck')
+    shared_decks = db.relationship('SharedDeck', cascade='all, delete')
+    
+    likes = db.relationship('DeckLikes', cascade='all, delete')
     
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
@@ -81,51 +82,6 @@ class User(db.Model, UserMixin):
                 return user
 
         return False
-    
-class SharedDeck(db.Model):
-    """Deck shared with others by user."""
-    
-    __tablename__ = 'shared_decks'
-    
-    id = db.Column(db.Integer, 
-                   primary_key=True, 
-                   autoincrement=True)
-    
-    deck_id = db.Column(db.Integer, 
-                        ForeignKey('decks.id', 
-                                      ondelete='cascade'))
-    
-    user_id = db.Column(db.Integer, 
-                        ForeignKey('users.id', 
-                                      ondelete='cascade'))
-    
-    timestamp = db.Column(db.DateTime, 
-                          nullable=False, 
-                          default=datetime.utcnow())
-    
-    user = db.relationship('User')
-        
-    likes = db.relationship('User',
-                            secondary='deck_likes')
-    
-    deck = db.relationship('Deck')
-    
-class DeckLikes(db.Model):
-    """Mapping user likes to shared decks."""
-    
-    __tablename__ = 'deck_likes'
-    
-    id = db.Column(db.Integer, 
-                   primary_key=True, 
-                   autoincrement=True)
-    
-    shared_deck_id = db.Column(db.Integer, 
-                        ForeignKey('shared_decks.id', 
-                                      ondelete='cascade'))
-    
-    user_id = db.Column(db.Integer, 
-                        ForeignKey('users.id', 
-                                      ondelete='cascade'))
     
 ##### Deck relationship models. #####
 
@@ -200,8 +156,7 @@ class Card(db.Model):
             'main_effect': self.main_effect,
             'image_url': self.image_url
         }
-        
-    
+
 class MainDecklist(db.Model):
     """Main decklist."""
     
@@ -210,6 +165,8 @@ class MainDecklist(db.Model):
     id = db.Column(db.Integer, 
                    primary_key=True, 
                    autoincrement=True)
+    
+    main_deck = db.relationship('MainDeckCard', cascade='all, delete')
     
     def main_cards(main_decklist_id):
         """Get all cards in main decklist."""
@@ -241,11 +198,11 @@ class MainDeckCard(db.Model):
                    autoincrement=True)
     
     main_decklist_id = db.Column(db.Integer, 
-                             ForeignKey('main_decklists.id', 
-                             ondelete='cascade'))
+                             ForeignKey('main_decklists.id'))
     
     m_card_num = db.Column(db.Text, 
                            ForeignKey('cards.cardnumber'))
+    
     qty = db.Column(db.Integer)
     
 class EggDecklist(db.Model):
@@ -256,6 +213,8 @@ class EggDecklist(db.Model):
     id = db.Column(db.Integer, 
                    primary_key=True, 
                    autoincrement=True)
+    
+    egg_deck = db.relationship('EggDeckCard', cascade='all, delete')
     
     def egg_cards(egg_decklist_id):
         """Get all cards in egg decklist."""
@@ -276,11 +235,11 @@ class EggDeckCard(db.Model):
                    autoincrement=True)
     
     egg_decklist_id = db.Column(db.Integer, 
-                             ForeignKey('egg_decklists.id', 
-                             ondelete='cascade'))
+                             ForeignKey('egg_decklists.id'))
     
     e_card_num = db.Column(db.Text, 
                            ForeignKey('cards.cardnumber'))
+    
     qty = db.Column(db.Integer)
     
 class SideDecklist(db.Model):
@@ -291,6 +250,8 @@ class SideDecklist(db.Model):
     id = db.Column(db.Integer, 
                    primary_key=True, 
                    autoincrement=True)
+    
+    side_deck = db.relationship('SideDeckCard', cascade='all, delete')
     
     def side_cards(side_decklist_id):
         """Get all cards in side decklist."""
@@ -311,11 +272,11 @@ class SideDeckCard(db.Model):
                    autoincrement=True)
     
     side_decklist_id = db.Column(db.Integer, 
-                             ForeignKey('side_decklists.id', 
-                             ondelete='cascade'))
+                             ForeignKey('side_decklists.id'))
     
     s_card_num = db.Column(db.Text, 
                            ForeignKey('cards.cardnumber'))
+    
     qty = db.Column(db.Integer)
 
 class Deck(db.Model):
@@ -335,18 +296,31 @@ class Deck(db.Model):
                                       ondelete='cascade'))
 
     main_decklist_id = db.Column(db.Integer, 
-                        ForeignKey('main_decklists.id', 
-                                      ondelete='cascade'))
+                        ForeignKey('main_decklists.id'))
 
     egg_decklist_id = db.Column(db.Integer, 
-                        ForeignKey('egg_decklists.id', 
-                                      ondelete='cascade'))
+                        ForeignKey('egg_decklists.id'))
 
     side_decklist_id = db.Column(db.Integer, 
-                        ForeignKey('side_decklists.id', 
-                                      ondelete='cascade'))
+                        ForeignKey('side_decklists.id'))
     
     HDP_deck_img = db.Column(db.Text)
+    
+    is_shared = db.Column(db.Boolean, default=False)
+    
+    timestamp = db.Column(db.DateTime, 
+                          nullable=False, 
+                          default=datetime.utcnow())
+    
+    user = db.relationship('User')
+    
+    main = db.relationship('MainDecklist', cascade='all, delete')
+    
+    egg = db.relationship('EggDecklist', cascade='all, delete')
+    
+    side = db.relationship('SideDecklist', cascade='all, delete')
+    
+    shared = db.relationship('SharedDeck', cascade='all, delete')
     
     def __repr__(self):
         return f"<Deck #{self.id}: {self.name}, {self.user_id}>"
@@ -411,3 +385,43 @@ class Deck(db.Model):
                 db.session.add(s_card)
 
         db.session.commit()
+
+class SharedDeck(db.Model):
+    """Deck shared with others by user."""
+    
+    __tablename__ = 'shared_decks'
+    
+    id = db.Column(db.Integer, 
+                   primary_key=True, 
+                   autoincrement=True)
+    
+    deck_id = db.Column(db.Integer, 
+                        ForeignKey('decks.id'))
+    
+    user_id = db.Column(db.Integer, 
+                        ForeignKey('users.id'))
+    
+    timestamp = db.Column(db.DateTime, 
+                          nullable=False, 
+                          default=datetime.utcnow())
+    
+    user = db.relationship('User')
+        
+    likes = db.relationship('DeckLikes', cascade='all, delete')
+    
+    deck = db.relationship('Deck')
+    
+class DeckLikes(db.Model):
+    """Mapping user likes to shared decks."""
+    
+    __tablename__ = 'deck_likes'
+    
+    id = db.Column(db.Integer, 
+                   primary_key=True, 
+                   autoincrement=True)
+    
+    shared_deck_id = db.Column(db.Integer, 
+                        ForeignKey('shared_decks.id'))
+    
+    user_id = db.Column(db.Integer, 
+                        ForeignKey('users.id'))
