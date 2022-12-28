@@ -9,7 +9,7 @@
 <div class="container-sm" style="max-width: 1200px;">
     <div class="row justify-content-between">
         {% for sh_deck in shared_decks %}
-        <a id="deck-banner" href="{{ url_for( 'show_deck', deck_id=sh_deck.deck.id) }}" style="background-image: url( {{sh_deck.deck.HDP_deck_img}} ); min-width: 370px;" class="search-card-img m-3 p-0 text-white bg-secondary rounded shared col-3">
+        <a id="deck-banner" href="{{ url_for( 'show_deck', deck_id=sh_deck.deck_id) }}" style="background-image: url( {{sh_deck.deck.HDP_deck_img}} ); min-width: 370px;" class="search-card-img m-3 p-0 text-white bg-secondary rounded shared col-3">
             <div id="deck-banner-data" class="rounded p-2">
                 <h4>
                     {{ sh_deck.deck.name }}
@@ -24,6 +24,7 @@
                         {{ sh_deck.timestamp }}
                     </span>
                     <span>
+                        by 
                         <i class="fa-regular fa-user"></i>
                         {{ sh_deck.user.username }}
                     </span>
