@@ -24,6 +24,10 @@ $('#messages').on('click', '.btn-close', () => {
     $('#messages').remove()
 })
 
+$('.toast-container').on('click', '.btn-close', () => {
+    $('.toast').parent().remove()
+})
+
 clearForm = () => {
     $('option[value=""]').removeAttr('disabled','')
     $('.list-cards').empty()
@@ -124,11 +128,15 @@ async function getSearchResults(params) {
 
 createCardHTML = (card) => {
     // add hover stats here maybe? ***
-    return `
-        <div data-card-num=${card.cardnumber} class='search-card'>
-        <img class='card-img search-card-img' src='${card.image_url}' alt='${card.name}'
-        </div>
+    
+
+    const cardHTML = `
+    <div data-card-num=${card.cardnumber} class='search-card'>
+    <img class='card-img search-card-img' src='${card.image_url}' alt='${card.name}'
+    </div>
     `;
+
+    return cardHTML
 }
 
 handleSearch = (res) => {

@@ -69,7 +69,10 @@ class Deck {
 
         if (isEgg) {
             if (!this.eDeckLength()) {
-                console.log('Deck can have only 5 egg cards.')
+                const msg = 'Deck can have only 5 egg cards.'
+                const toastMsg = this.toastHTML(msg)
+
+                this.showToast(toastMsg,msg)
             } else {
                 const eDeck = this.decklist.eggDeck
                 eDeck[`${cardNum}`] = eDeck[`${cardNum}`] + 1 || 1;
@@ -80,7 +83,10 @@ class Deck {
             }
         } else {
             if (!this.mDeckLength()) {
-                console.log('Deck can have only 50 main cards.')
+                const msg = 'Deck can have only 50 main cards.'
+                const toastMsg = this.toastHTML(msg)
+
+                this.showToast(toastMsg,msg)
             } else {
                 const mDeck = this.decklist.mainDeck
                 mDeck[`${cardNum}`] = mDeck[`${cardNum}`] + 1 || 1;
@@ -90,13 +96,15 @@ class Deck {
                 $('.main-deck').append(card)
             }
         }
-        console.log(this.decklist)
     }
     sideCardSorter(cardNum,cardData) {
         const card = createCardHTML(cardData)
 
         if (!this.sDeckLength()) {
-            console.log('Deck can have only 10 side cards.')
+            const msg = 'Deck can have only 10 side cards.'
+            const toastMsg = this.toastHTML(msg)
+
+            this.showToast(toastMsg, msg)
         } else {
             const sDeck = this.decklist.sideDeck
             sDeck[`${cardNum}`] = sDeck[`${cardNum}`] + 1 || 1;
@@ -143,6 +151,43 @@ class Deck {
             delete mDeck[cardNum]
         }
     }
+    toastHTML(msg) {
+        return `
+        <div class="p-3" style="z-index: 2">
+            <div class="toast show bg-warning" role="alert">
+                <div class="toast-header bg-warning text-dark">
+                <i class="fa-solid fa-gear p-1"></i> 
+                <strong class="me-auto">DigimonCard</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${msg}
+                </div>
+            </div>
+        </div>
+        `
+    }
+    showToast(toastMsg, msg) {
+        if ($('.toast-container').has('div').length) {
+            const toasts = $('.toast-body').html()
+            console.log(toasts)
+            if (!toasts.includes(msg)) {
+                $('.toast-container').append(toastMsg)
+    
+                setTimeout((() => {
+                    $('.toast-container').children().first().remove()
+                }), 5000)
+            } else {
+                return
+            }
+        } else {
+            $('.toast-container').append(toastMsg)
+    
+                setTimeout((() => {
+                    $('.toast-container').children().first().remove()
+                }), 6000)
+        }
+    }
     async handleClick(e) {
         const cardNum = $(e.target).closest('div').attr('data-card-num')
 
@@ -155,7 +200,11 @@ class Deck {
         const isEgg = cardData.type === 'Digi-Egg'
 
         if (!this.checkInstancesOfCard(cardNum,isEgg)) {
-            console.log('Can have only 4 of any 1 card between main/egg and side decks.')
+            const msg = 'Can have only 4 of any 1 card between main/egg and side decks.'
+            const toastMsg = this.toastHTML(msg)
+
+            this.showToast(toastMsg, msg)
+            
         } else {
             if ($('#card-sorter').val() === 'main') {
                 this.mainCardSorter(cardNum,cardData,isEgg)
@@ -232,9 +281,15 @@ class Deck {
             })
         } else {
             if (!data.name) {
-                console.log('Enter a deck name.')
+                const msg = 'Enter a deck name.'
+                const toastMsg = this.toastHTML(msg)
+
+                this.showToast(toastMsg, msg)
             } else {
-                console.log('Main Deck must have 50 cards.')
+                const msg = 'Main Deck must have 50 cards.'
+                const toastMsg = this.toastHTML(msg)
+
+                this.showToast(toastMsg, msg)
             }
 
         }
