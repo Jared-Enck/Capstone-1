@@ -9,7 +9,7 @@
             <ul id="list-decks" class="container-sm">
             {% if decks %}
                 {% for deck in decks %}
-                <li class="row justify-content-center rounded m-2">
+                <li class="row justify-content-center rounded m-2 search-card-img">
                     <div class="card col-12 p-0 text-center">
                         <img src="{{ deck.HDP_deck_img }}" alt="" class="card-img-top">
                         <a href="{{ url_for( 'show_deck', deck_id=deck.id ) }}" class="text-light card-img-overlay rounded">
@@ -61,7 +61,7 @@
                                     </small>
                                 {% endfor %}
                             {% endfor %}
-                        <button id="clear" class="btn btn-sm btn-basic">
+                        <button id="clear" class="btn btn-sm btn-basic" data-bs-toggle="tooltip" title="Clear search filters.">
                             <i class="fa-sharp fa-solid fa-rotate"></i>
                         </button>
                         </div>
@@ -91,7 +91,7 @@
                                     </span>
                                     /50
                                 </span>
-                                <button id="clear-main" class="btn btn-sm btn-basic">
+                                <button id="clear-main" class="btn btn-sm btn-basic" data-bs-toggle="tooltip" title="Clear main deck.">
                                     <i class="fa-sharp fa-solid fa-rotate"></i>
                                 </button>
                             </li>
