@@ -43,7 +43,7 @@ class User(db.Model, UserMixin):
     
     shared_decks = db.relationship('SharedDeck', cascade='all, delete')
     
-    likes = db.relationship('DeckLikes', cascade='all, delete')
+    liked_decks = db.relationship('DeckLikes', cascade='all, delete')
     
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
@@ -104,7 +104,7 @@ class Card(db.Model):
                           nullable=True)
     level = db.Column(db.Text, 
                       nullable=True)
-    play_cost = db.Column(db.Integer, 
+    play_cost = db.Column(db.Text, 
                           nullable=True)
     evolution_cost = db.Column(db.Text, 
                                nullable=True)
@@ -151,9 +151,16 @@ class Card(db.Model):
             'name': self.name,
             'type': self.type,
             'color': self.color,
+            'stage': self.stage,
+            'digi_type': self.digi_type,
+            'attribute': self.attribute,
+            'level': self.level,
             'play_cost': self.play_cost,
+            'evolution_cost': self.evolution_cost,
+            'dp': self.dp,
             'cardnumber': self.cardnumber,
             'main_effect': self.main_effect,
+            'source_effect': self.source_effect,
             'image_url': self.image_url
         }
 
