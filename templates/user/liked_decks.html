@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Liked Decks{% endblock %}
+
+{% block content %}
+<div class="container-sm mt-2" style="max-width: 1200px;">
+    <h2 class="text-center">
+        {{ user.username }}'s Liked Decks
+    </h2>
+	<hr>
+    <div class="row justify-content-between mx-auto p-2">
+		{% for deck in liked_decks %}
+		<a id="deck-banner" href="{{ url_for( 'show_deck', deck_id=deck.deck.id) }}" style="background-image: url( {{deck.deck.HDP_deck_img}} ); min-width: 370px;" class="search-card-img p-0 text-white bg-secondary rounded shared col-3">
+			<div id="deck-banner-data" class="rounded-bottom p-2">
+				<h4>
+					{{ deck.deck.name }}
+				</h4>
+				<div class="d-flex justify-content-between">
+					<span>
+						<i class="fa-regular fa-thumbs-up"></i>
+						{{ deck.likes | length}}
+					</span>
+					<span>
+						<i class="fa-regular fa-calendar"></i>
+						{{ deck.timestamp.strftime('%d %B %Y') }}
+					</span>
+					<span>
+						<i class="fa-regular fa-user"></i>
+						{{ deck.user.username }}
+					</span>
+				</div>                    
+			</div>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

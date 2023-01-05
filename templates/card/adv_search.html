@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Advanced Search{% endblock %}
+
+{% block content %}
+<div class="container-sm bg-light rounded mt-2" style="max-width: 1200px;">
+    <div class="row mx-0 justify-content-center p-2">
+        <h2>
+            Advanced Search
+        </h2>
+        {{ adv_form.hidden_tag() }}
+        <form class="adv-search">
+            <input id="adv-input" placeholder="Search card name" name="n" type="search" 
+            class="form-control mb-3" autofocus>
+            <div class="d-flex">
+                {% for field in adv_form if field.widget.input_type != 'hidden' %}
+                    {{ field(class="form-control bg-light filter mb-2") }}
+                    {% for error in field.errors %}
+                        <small class="text-danger">
+                        {{ error }}
+                        </small>
+                    {% endfor %}
+                {% endfor %}
+                <button id="clear" class="btn btn-sm btn-basic" data-bs-toggle="tooltip" title="Clear search filters.">
+                    <i class="fa-sharp fa-solid fa-rotate"></i>
+                </button>
+            </div>
+            <button id="search-btn" class="btn btn-md btn-primary">
+                Search
+            </button>
+        </form>
+    </div>
+    <div class="list-cards results row mx-0 justify-content-between m-4">
+    </div>
+</div>
+{% endblock %}
