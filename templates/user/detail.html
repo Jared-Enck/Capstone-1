@@ -2,26 +2,95 @@
 {% block title %}User Info{% endblock %}
 
 {% block content %}
-<div class="container-sm banner">
-	<div class="row justify-content-center">
-		<ul class="col-12">
-			<li class="d-flex bg-light">
-				<img id="profile-avatar" src="{{ user.avatar }}" alt="Image for {{ user.username }}" class="col-2 pr-3">
-				<h2>{{ user.username }}</h2>
-			</li>
-				<div class="list-group list-group-horizontal">
-					<a href="{{ url_for( 'user_decks' ) }}" class="list-group-item">
-						<i class="fa-regular fa-cards-blank"></i>
-						{{ user.decks | length }}
+<div class="container-sm mt-2" style="max-width: 1200px;">
+	<div class="row mx-auto">
+		<div class="col-4 col-md-2 p-0">
+			<img id="profile-avatar" src="{{ user.avatar }}" alt="Image for {{ user.username }}" class="rounded">
+		</div>
+		<div class="col-8 col-md-10 p-2 bg-light rounded">
+			<h1 class="h-50"> 
+				{{ user.username }}
+			</h1>
+			<div class="row p-2 mt-4">
+				<span class="col-3 col-md-1">
+					<i class="fa-solid fa-layer-group"></i>
+					{{ user.decks | length }}
+				</span>
+				<span class="col-3 col-md-1">
+					<i class="fa-regular fa-thumbs-up"></i>
+					<a href="{{ url_for('user_deck_likes', user_id=user.id) }}">
+						{{ user.liked_decks | length }}
 					</a>
-					{% if current_user.id == user.id %}
-						<a href="/edit/{{ user.id }}" class="list-group-item">Edit Profile
-						</a>
-						<button id="delete-button" class="list-group-item list-group-item-danger">Delete Profile</button>
-					{% endif %}
-				</div>
-			</li>
-		</ul>
+				</span>
+			</div>
+		</div>
 	</div>
+	<div class="row justify-content-center mx-auto">
+	{% if current_user.id == user.id %}
+		<a href="/edit/{{ user.id }}" class="btn btn-md btn-outline-primary col-4 col-md-3 col-lg-2 mb-2 m-1">
+			Edit Profile
+		</a>
+		<button class="btn btn-md btn-outline-danger col-4 col-md-3 col-lg-2 mb-2 m-1" data-bs-toggle="modal" data-bs-target="#delete-conf">
+			Delete Profile
+		</button>
+	{% endif %}
+	{% if user.shared_decks %}
+	<h2 class="text-center">
+		Uploaded Decks
+	</h2>
+	<hr>
+	</div>
+	<div class="row justify-content-between mx-auto p-2">
+		{% for sh_deck in user.shared_decks %}
+		<a id="deck-banner" href="{{ url_for( 'show_deck', deck_id=sh_deck.deck.id) }}" style="background-image: url( {{sh_deck.deck.HDP_deck_img}} ); min-width: 370px;" class="search-card-img p-0 text-white bg-secondary rounded shared col-3">
+			<div id="deck-banner-data" class="rounded-bottom p-2">
+				<h4>
+					{{ sh_deck.deck.name }}
+				</h4>
+				<div class="d-flex justify-content-between">
+					<span>
+						<i class="fa-regular fa-thumbs-up"></i>
+						{{ sh_deck.likes | length}}
+					</span>
+					<span>
+						<i class="fa-regular fa-calendar"></i>
+						{{ sh_deck.timestamp.strftime('%d %B %Y') }}
+					</span>
+					<span>
+						<i class="fa-regular fa-user"></i>
+						{{ sh_deck.user.username }}
+					</span>
+				</div>                    
+			</div>
+		</a>
+		{% endfor %}
+	</div>
+	{% endif %}
+
+	<div id="delete-conf" class="modal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3 class="modal-title text-center">
+						Are you sure you want to delete your profile?
+					</h3>
+				</div>
+				<div class="modal-body">
+					<img src="/static/terriermon.png" alt="" class="img-fluid">
+				</div>
+				<div class="modal-footer justify-content-center">
+					<button class="btn btn-outline-primary col-4 m-1 cancel" data-bs-dismiss="modal">
+						Cancel
+					</button>
+					<form action="{{ url_for('delete_user') }}" method="post">
+						<button class="btn btn-danger form-control m-1">
+							Confirm Delete
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
 </div>
 {% endblock %}
