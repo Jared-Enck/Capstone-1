@@ -1,9 +1,17 @@
 body {
     margin: 0;
     padding: 0;
+    font-family: Rubik;
 }
 a {
     text-decoration: none;
+}
+#deck-banner-data a {
+    color: #ffff;
+}
+#deck-banner-data a:hover {
+    text-decoration: underline;
+    color: rgb(255, 140, 0);
 }
 /* ######## navbar ######## */
 
@@ -79,21 +87,15 @@ a {
     height: 25em;
 }
 
+.form-banner {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
 /* ######## search ######## */
 
-#search-window {
-    position: absolute;
+.modal {
     margin-left: 50%;
-    padding: 1em 2em 1em 2em;
     transform: translate(-50%);
-    width: 80vw;
-    max-width: 1100px;
-    height: 90vh;
-    overflow: auto;
-    border: .08em solid rgba(0, 0, 0, 0.3);
-    box-shadow: .2em .1em .1em rgba(0, 0, 0, 0.2);
-    border-radius: 7px;
-    z-index: 2;
 }
 
 .close {
@@ -146,19 +148,6 @@ a {
     width: 9em;
 }
 
-#delete-conf {
-    margin-top: 2em;
-    margin-left: 50%;
-    transform: translate(-50%);
-    border: .1em solid rgba(0, 0, 0, 0.3);
-    border-radius: 1%;
-    width: 40vw;
-    max-width: 500px;
-    min-width: 320px;
-    position: absolute;
-    z-index: 1;
-}
-
 /* ######## decks ######## */
 
 #decks {
@@ -195,6 +184,12 @@ a {
 }
 #pre-DB-content{
     max-width: 1200px;
+}
+
+.tip-list2 {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 #DB {
     max-width: 1200px;
@@ -275,11 +270,10 @@ a {
 
 /* loading spinner */
 
-#loading {
+.loading {
     width: 100%;
-    z-index: 9999;
 }
-#loading img {
+.loading img {
     width: 5em;
 }
 
