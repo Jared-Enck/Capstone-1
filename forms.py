@@ -5,7 +5,7 @@ from wtforms.validators import Length, Optional, DataRequired, Email
 class RegisterForm(FlaskForm):
     """Form for adding users."""
 
-    username = StringField('Username', validators=[DataRequired(message='Enter a username.')])
+    username = StringField('Username', validators=[DataRequired(message='Enter a username.'), Length(max=20)])
     password = PasswordField('Password', validators=[Length(min=6, message='Password be at least 6 characters.')])
     email = EmailField('Email', validators=[Email(message='Enter a valid email.')])
         
@@ -58,6 +58,21 @@ class EditUserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(message='Enter a username.')])
     email = EmailField('Email', validators=[Email(message='Enter a valid email.')])
     
-    choices = []
+    choices = [('/static/digi_avatars/agumon.gif','Agumon'),
+               ('/static/digi_avatars/angemon.jpg','Angemon'),
+               ('/static/digi_avatars/angewoman.png','Angewomon'),
+               ('/static/digi_avatars/bit-agumon.gif','Bit-Agumon'),
+               ('/static/digi_avatars/biyomon.gif','Biyomon'),
+               ('/static/digi_avatars/blank-digivice.gif','Digivice'),
+               ('/static/digi_avatars/botamon.gif','Botamon'),
+               ('/static/digi_avatars/gomamon.gif','Gomamon'),
+               ('/static/digi_avatars/jesmon.jpg','Jesmon'),
+               ('/static/digi_avatars/ladydevimon.jpg','LadyDevimon'),
+               ('/static/digi_avatars/metalgreymon.png','MetalGreymon'),
+               ('/static/digi_avatars/omegamon.jpg','Omnimon'),
+               ('/static/digi_avatars/palmon.gif','Palmon'),
+               ('/static/digi_avatars/patamon.gif','Patamon'),
+               ('/static/digi_avatars/tentamon.gif','Tentamon'),
+               ('/static/digi_avatars/wargreymon.jpg','WarGreymon')]
     
     avatar = SelectField('Avatar', choices=choices, validators=[Optional()])
