@@ -3,25 +3,26 @@
 {% block title %}Homepage{% endblock %}
 
 {% block content %}
-
-<h1>Recent Decks</h1>
-
 <div class="container-sm" style="max-width: 1200px;">
+    <h1 class="text-center pt-2 m-0">
+        Recent Decks
+    </h1>
+    <hr>
     <div class="row justify-content-between">
         {% for sh_deck in shared_decks %}
-        <a id="deck-banner" href="{{ url_for( 'show_deck', deck_id=sh_deck.deck_id) }}" style="background-image: url( {{sh_deck.deck.HDP_deck_img}} ); min-width: 370px;" class="search-card-img m-3 p-0 text-white bg-secondary rounded shared col-3">
-            <div id="deck-banner-data" class="rounded p-2">
-                <h4>
+        <a id="deck-banner" href="{{ url_for( 'show_deck', deck_id=sh_deck.deck_id) }}" style="background-image: url( {{sh_deck.deck.HDP_deck_img}} ); min-width: 370px;" class="search-card-img m-2 p-0 text-white bg-secondary rounded shared col-3">
+            <div id="deck-banner-data" class="rounded-bottom ps-2 pe-2">
+                <h4 class="mb-3 pt-1">
                     {{ sh_deck.deck.name }}
                 </h4>
                 <div class="d-flex justify-content-between">
                     <span>
                         <i class="fa-regular fa-thumbs-up"></i>
-                        0
+                        {{ sh_deck.likes | length}}
                     </span>
                     <span>
                         <i class="fa-regular fa-calendar"></i>
-                        {{ sh_deck.timestamp }}
+                        {{ sh_deck.timestamp.strftime('%d %B %Y') }}
                     </span>
                     <span>
                         by 
@@ -34,5 +35,4 @@
         {% endfor %}
     </div>
 </div>
-
 {% endblock %}

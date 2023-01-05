@@ -4,25 +4,35 @@
 
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-7 col-lg-4">
-    <form method="POST" id="user_form">
-      <div class="form-group">
-        <h2>
-          Create an Account!
-        </h2>
-      </div>
-        {{ form.hidden_tag() }}
-  
-        {% for field in form if field.widget.input_type != 'hidden' %}
-            {{ field(placeholder=field.label.text, class="form-control mb-2") }}
-            {% for error in field.errors %}
-                <small class="text-danger">
-                  {{ error }}
-                </small>
-            {% endfor %}
-        {% endfor %}
-        <button class="btn btn-primary btn-md">Register</button>
-      </form>
-    </div>
-  </div>
+  	<div class="col-10 col-md-7 forms rounded shadow">
+		<form method="post" id="user_form">
+			<div class="rounded form-banner">
+				<h1 class="text-center text-light">
+					Create an Account!
+				</h1>
+				<p class="text-center text-light p-1">
+					Already signed up? Login
+					<a href="{{ url_for('login') }}">
+						here!
+					</a>
+				</p>
+			</div>
+			<hr class="m-2">
+			<div class="row justify-content-center ps-4 pe-4">
+			{{ form.hidden_tag() }}
+				{% for field in form if field.widget.input_type != 'hidden' %}
+					{{ field(placeholder=field.label.text, class="form-control mt-4") }}
+					{% for error in field.errors %}
+						<small class="text-danger ps-2">
+						{{ error }}
+						</small>
+					{% endfor %}
+				{% endfor %}
+				<button class="btn btn-primary btn-md col-6 col-sm-3 mt-3">
+					Register
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
 {% endblock %}

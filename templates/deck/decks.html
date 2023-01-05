@@ -4,7 +4,8 @@
 
 {% block content %}
 <div class="container-sm-fluid">
-    <div class="row mx-0">
+    <div class="row mx-auto">
+
         <div id="decks" class="col-4 col-sm-2 bg-secondary p-0">
             <ul id="list-decks" class="container-sm">
             {% if decks %}
@@ -24,12 +25,16 @@
             </div>
             {% endif %}
             </ul>
-        </div>
+        </div> 
+
         <div class="col-8 col-sm-10 mt-3">
-            <div class="container-sm-fluid">
-                <div id="pre-DB-content" class="row mx-0 justify-content-center">
+            <div class="container-fluid">
+
+                <div id="pre-DB-content" class="row justify-content-center">
                     {% if decks | length == 0 %}
-                    <h2 class="text-center">Don't have any decks yet?</h2>
+                    <h2 class="text-center">
+                        Don't have any decks yet?
+                    </h2>
                     <h5 class="text-center m-2">
                         Create one below!
                     </h5>
@@ -37,20 +42,15 @@
                     <button id="deck-builder-btn" class="btn btn-lg btn-primary col-6 col-md-3">
                         Deck Builder
                     </button>
-                    <h2 class="text-center mt-3">
-                        Deck builder tips...
-                    </h2>
-                    <div class="row justify-content-center p-0">
-        
-                    </div>
                 </div>
-                <div id="DB" class="row d-none mx-0 justify-content-center">
+
+                <div id="DB" class="row d-none justify-content-center">
                     <h2>
                         Deck Builder
                     </h2>
                     {{ adv_form.hidden_tag() }}
-                    <form id="adv-search">
-                        <input placeholder="Search card name" name="n" type="search" 
+                    <form class="adv-search">
+                        <input id="adv-input" placeholder="Search card name" name="n" type="search" 
                         class="form-control mb-3">
                         <div class="d-flex">
                             {% for field in adv_form if field.widget.input_type != 'hidden' %}
@@ -65,7 +65,7 @@
                             <i class="fa-sharp fa-solid fa-rotate"></i>
                         </button>
                         </div>
-                        <button class="btn btn-md btn-primary">Search</button>
+                        <button id="search-btn" class="btn btn-md btn-primary">Search</button>
                     </form>
                     <div class="col-9 col-md-4 m-2">
                         <select class="form-control bg-light" name="card-sorter" id="card-sorter">
@@ -74,7 +74,7 @@
                         </select>
                     </div>
                     <div class="row justify-content-center">
-                        <div class="list-cards db-search-results">
+                        <div class="row list-cards d-flex justify-content-between db-search-results">
                         </div>
                         <form id="save-deck" class="col-10 col-md-4 d-flex m-2 justify-content-between p-0">
                             <input type="text" placeholder="Name your deck" name="deck-name" id="deck-name" class="form-control m-1">
@@ -95,7 +95,7 @@
                                     <i class="fa-sharp fa-solid fa-rotate"></i>
                                 </button>
                             </li>
-                            <li data-deck-type="mainDeck" class="list-group-item main-deck decklist-area">
+                            <li data-deck-type="mainDeck" class="list-group-item main-deck decklist-area db-decklist">
                 
                             </li>
                         </ul>
@@ -111,7 +111,7 @@
                                     /5
                                 </span>
                             </li>
-                            <li data-deck-type="eggDeck" class="list-group-item egg-deck decklist-area">
+                            <li data-deck-type="eggDeck" class="list-group-item egg-deck decklist-area db-decklist">
                 
                             </li>
                         </ul>
@@ -127,12 +127,13 @@
                                     /10
                                 </span>
                             </li>
-                            <li data-deck-type="sideDeck" class="list-group-item side-deck decklist-area">
+                            <li data-deck-type="sideDeck" class="list-group-item side-deck decklist-area db-decklist">
                 
                             </li>
                         </ul>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
