@@ -1,4 +1,4 @@
-// Deck class
+// Deck class for deck builder.
 
 class Deck {
     constructor(mainLimit,eggLimit,sideLimit,cardLimit) {
@@ -38,6 +38,43 @@ class Deck {
     }
     sDeckLength() {
         return this.sumCards(this.decklist.sideDeck) < this.sideLimit
+    }
+    toastHTML(msg) {
+        return `
+        <div class="p-3" style="z-index: 2">
+            <div class="toast show bg-warning" role="alert">
+                <div class="toast-header bg-warning text-dark">
+                <i class="fa-solid fa-gear p-1"></i> 
+                <strong class="me-auto">DigimonCard</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${msg}
+                </div>
+            </div>
+        </div>
+        `
+    }
+    showToast(toastMsg, msg) {
+        if ($('.toast-container').has('div').length) {
+            const toasts = $('.toast-body').html()
+
+            if (!toasts.includes(msg)) {
+                $('.toast-container').append(toastMsg)
+    
+                setTimeout((() => {
+                    $('.toast-container').children().first().remove()
+                }), 5000)
+            } else {
+                return
+            }
+        } else {
+            $('.toast-container').append(toastMsg)
+    
+                setTimeout((() => {
+                    $('.toast-container').children().first().remove()
+                }), 5000)
+        }
     }
     checkInstancesOfCard(cardNum, isEgg) {
         const {cardLimit,decklist} = this
@@ -151,43 +188,6 @@ class Deck {
             delete mDeck[cardNum]
         }
     }
-    toastHTML(msg) {
-        return `
-        <div class="p-3" style="z-index: 2">
-            <div class="toast show bg-warning" role="alert">
-                <div class="toast-header bg-warning text-dark">
-                <i class="fa-solid fa-gear p-1"></i> 
-                <strong class="me-auto">DigimonCard</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-                </div>
-                <div class="toast-body">
-                    ${msg}
-                </div>
-            </div>
-        </div>
-        `
-    }
-    showToast(toastMsg, msg) {
-        if ($('.toast-container').has('div').length) {
-            const toasts = $('.toast-body').html()
-            console.log(toasts)
-            if (!toasts.includes(msg)) {
-                $('.toast-container').append(toastMsg)
-    
-                setTimeout((() => {
-                    $('.toast-container').children().first().remove()
-                }), 5000)
-            } else {
-                return
-            }
-        } else {
-            $('.toast-container').append(toastMsg)
-    
-                setTimeout((() => {
-                    $('.toast-container').children().first().remove()
-                }), 6000)
-        }
-    }
     async handleClick(e) {
         const cardNum = $(e.target).closest('div').attr('data-card-num')
 
@@ -200,7 +200,7 @@ class Deck {
         const isEgg = cardData.type === 'Digi-Egg'
 
         if (!this.checkInstancesOfCard(cardNum,isEgg)) {
-            const msg = 'Can have only 4 of any 1 card between main/egg and side decks.'
+            const msg = 'Can have only 4 copies of any one card between Main/Egg and Side decks.'
             const toastMsg = this.toastHTML(msg)
 
             this.showToast(toastMsg, msg)
@@ -227,6 +227,7 @@ class Deck {
         $('#ED-count').html('0');
         $('#SD-count').html('0');
         $('.decklist-area').empty();
+        $('input[name="n"]').focus()
 
         const MD = this.decklist.mainDeck
         const ED = this.decklist.eggDeck
@@ -246,7 +247,7 @@ class Deck {
         const deck = newDeckResp.deck
         
         return `
-        <li class="row justify-content-center rounded m-2">
+        <li class="row justify-content-center rounded m-2 search-card-img">
             <div class="card col-12 p-0 text-center">
                 <img src="${deck.HDP_deck_img}" alt="" class="card-img-top">
                 <a href="/decks/${deck.id}" class="text-light card-img-overlay rounded">
@@ -285,13 +286,13 @@ class Deck {
                 const toastMsg = this.toastHTML(msg)
 
                 this.showToast(toastMsg, msg)
-            } else {
+            } 
+            if (main_total != this.mainLimit) {
                 const msg = 'Main Deck must have 50 cards.'
                 const toastMsg = this.toastHTML(msg)
 
                 this.showToast(toastMsg, msg)
             }
-
         }
     }
 }
