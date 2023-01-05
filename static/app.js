@@ -1,18 +1,47 @@
 const BASE_API_URL = 'https://digimoncard.io/api-public/search.php?'
 
+$(document).ready(() => {
+    if ($('#username')) {
+        $('#username').focus()
+    }
+    if (window.location.href == 'http://127.0.0.1:5000/cards/advanced') {
+        $('#search-button').addClass('d-none')
+    }
+    if (window.location.href == 'http://127.0.0.1:5000/decks') {
+        if (!sessionStorage['tipsClosed']) {
+            return showTips()
+        }
+    }
+})
+
+// on click events.
+
 $('.nav-item').on('click','#search-button',()=>{
-    generateSearchWindow();
+    $('input[name=n]').focus()
+    $('.list-cards').empty()
 })
 
-$('#delete-button').on('click', (e) => {
-    generateDeleteConfirmation();
+$('#search-window').on('submit','#search_form', (e) => {
+    e.preventDefault();
+    $('.list-cards').empty();
+    let params =`n=${$('#search').val()}`;
+    $('#search').val('');
+    getSearchResults(params);
 })
 
-$('#adv-search').on('submit', (e) => {
+$('#search-window').on('click', 'img', (e) => {
+    handleCardClick(e);
+})
+
+$('.adv-search').on('submit', (e) => {
     e.preventDefault();
     $('option[value=""]').attr('disabled','')
-    const params = $('#adv-search').serialize()
+    const params = $('.adv-search').serialize()
     getSearchResults(params)
+})
+
+$('.results').on('click', 'img', (e) => {
+    handleCardClick(e);
 })
 
 $('#clear').on('click', (e) => {
@@ -28,6 +57,88 @@ $('.toast-container').on('click', '.btn-close', () => {
     $('.toast').parent().remove()
 })
 
+$('#pre-DB-content').on('click', '#tips-close', () => {
+    sessionStorage.setItem('tipsClosed', true)
+    $('#tips').remove()
+})
+
+$('#deck-builder-btn').on('click', (e) => {
+    e.preventDefault();
+    $('#pre-DB-content').remove()
+    $('#DB').removeClass('d-none')
+    $('input[name="n"]').focus()
+    $('.list-cards').empty();
+    new Deck(50,5,10,4).startDB()
+})
+
+$('#adv-input').keydown((e) => {
+    // if Enter key pressed in search input field.
+    const keyCode = (e.keyCode ? e.keyCode : e.which)
+
+    if (keyCode === 13) {
+        e.preventDefault();
+        $('#search-btn').click()
+    }
+})
+
+// DOM manip and API calls
+
+DBTipsHTML = () => {
+    const preDBContent = $('#pre-DB-content')
+
+    const tiplist1 = ['Main Deck must have 50 cards.','Egg and Side decks are optional.','You can only have 4 copies of any one card between your Main/Egg and Side decks.']
+
+    const tiplist2 = ['12 - LVL 3 cards','10 - LVL 4 cards','8 - LVL 5 cards','4 - LVL 6 cards','4 - Tamers','12 - Options']
+
+    const tipsRow = $('<div>').attr('id','tips').addClass('row mx-auto justify-content-center')
+    const deckConstraints = $('<div>').addClass('col-10 col-md-4')
+    
+    preDBContent.append(tipsRow.append(deckConstraints))
+
+    const list1HTML = $('<ul>').addClass('list-group list-group-flush')
+    const list1Header = $('<li>').addClass('d-flex list-group-item text-center')
+    const list1H2 = $('<h2>').addClass('mt-3').html('Deck builder tips.')
+    const tipsCloseBtn = $('<button>').attr('id','tips-close').addClass('btn btn-basic btn-close ms-auto mt-3 pt-3')
+
+    deckConstraints.append(list1HTML)
+    list1HTML.append(list1Header.append(list1H2,tipsCloseBtn))
+
+    for (let tip in tiplist1) {
+        let tHTML = $('<li>').addClass('list-group-item text-center')
+                             .append($('<span>').html(tiplist1[tip]))
+
+        list1HTML.append(tHTML)
+    }
+
+    const listConnect = $('<li>').addClass('list-group-item text-center')
+    const list2HTML = $('<ul>').addClass('list-group list-group-flush')
+
+    list1HTML.append(listConnect)
+    listConnect.append(list2HTML)
+
+    const list2Header = $('<li>').addClass('list-group-item text-center')
+    const list2H3 =  $('<h3>').addClass('mt-3').html('Recommended for a balanced deck.')
+
+    list2HTML.append(list2Header.append(list2H3))
+
+    const subListConnect = $('<li>').addClass('list-group-item text-center')
+    const subListHTML = $('<ul>').addClass('tip-list2')
+
+    list2HTML.append(subListConnect.append(subListHTML))
+
+    for (let tip in tiplist2) {
+        let tHTML = $('<li>').html(tiplist2[tip])
+
+        subListHTML.append(tHTML)
+    }
+}
+
+showTips = () => {
+    const tipsHTML = DBTipsHTML()
+
+    $('#pre-DB-content').append(tipsHTML)
+}
+
 clearForm = () => {
     $('option[value=""]').removeAttr('disabled','')
     $('.list-cards').empty()
@@ -35,78 +146,13 @@ clearForm = () => {
     $('#adv-search').find('select').val('')
 }
 
-generateDeleteConfirmation = () => {
-    createDeleteConfHTML();
+doLoader = () => {
+    const loader = $('<div>').addClass('text-center loading')
 
-    const dConf = $('#delete-conf')
+    const loadIMG = $('<img>').attr('src','/static/loading_gear_gif2.gif')
 
-    dConf.on('click', '.cancel', () => {
-        dConf.remove()
-    })
-}
-
-createDeleteConfHTML = () => {
-    $('body').prepend($('<div>').attr('id','delete-conf').addClass('container-sm bg-light p-2'))
-
-    let deleteTitle = $('<h3>').addClass('text-center').text('Are you sure you want to delete your profile?')
-
-    let deleteConfImg = $('<img>').attr('src','/static/terriermon.png').addClass('img-fluid')
-
-    let buttons = $('<div>').addClass('row justify-content-center')
-
-    let dForm = $('<form>').attr('id','d-form').attr('action','http://127.0.0.1:5000//users/delete').attr('method','POST').addClass('col-4 p-0')
-
-    let cancelBtn = $('<button>').addClass('btn btn-outline-primary col-4 m-1 cancel').text('Cancel')
-
-    let confDeleteBtn = $('<button>').attr('type','submit').addClass('btn btn-danger form-control m-1').text('Confirm Delete')
-
-    dForm.append(confDeleteBtn)
-
-    buttons.append(cancelBtn,dForm)
-
-    $('#delete-conf').append(deleteTitle,deleteConfImg,buttons)
-}
-
-generateSearchWindow = () => {
-    
-    createSearchHTML();    
-
-    $('#search-window').on('click','.close', () => {
-        $('#search-window').remove()
-    })
-
-    $('#search-window').on('submit','#search_form', (e) => {
-        e.preventDefault();
-        $('.list-cards').empty();
-        let params =`n=${$('#search').val()}`;
-        $('#search').val('');
-        getSearchResults(params);
-    })
-
-    $('#search-window').on('click', 'img', (e) => {
-        handleCardClick(e);
-    })
-}
-
-createSearchHTML = () => {
-    $('body').prepend($('<div>').attr('id','search-window').addClass('bg-light mt-2'));
-
-    let closeBtn = $('<button>').addClass('btn btn-sm btn-basic ms-auto close').text('X')
-    
-    let searchTitle = $('<h2>').text('Search Digimon Cards')
-    
-    let sContent = $('<div>').attr('id','s-content').addClass('justify-content-center')
-
-    let searchForm = '<form id="search_form"><input id="search" name="n" type="text" class="form-control mb-1" placeholder="Search cards by name"/><p class=" mb-1"><b>-or-</b></p></form>'
-    
-    let advBtn = $('<button>').addClass('btn btn-lg btn-primary mb-4').text('Advanced Search')
-    
-    let cardResults = $('<div>').addClass('list-cards')
-
-    let searchHeader = $('<div>').addClass('d-flex m-1').append(searchTitle, closeBtn)
-
-    $('#search-window').append(sContent)
-    $('#s-content').append(searchHeader,searchForm,advBtn,cardResults)
+    loader.append(loadIMG)
+    $('.list-cards').append(loader);
 }
 
 async function getSearchResults(params) {
@@ -115,36 +161,53 @@ async function getSearchResults(params) {
 
     $('.list-cards').empty();
 
+    doLoader()
+
     await axios
             .get(`${BASE_API_URL}` + queryStr)
             .then((res) => {
                 handleSearch(res)
             })
             .catch((err) => {
-                console.log(err)
+                if (err.response.status === 400) {
+                    const noResults = $('<h3>').addClass('text-center').html('~ No results found. ~')
 
+                    $('.list-cards').append(noResults)
+                }
+            })
+            .finally(() => {
+                $('.loading').remove()
             });
 }
 
+getHoverStats = (card) => {    
+    const stats = []
+
+    for (let stat in card) {
+        if (card[stat] !== null && stat !== 'image_url') {
+            stats.push(`${stat}: ${card[stat]}`)
+        }
+    }
+    const statsStr = stats.join('\r\n')
+    return statsStr
+}
+
 createCardHTML = (card) => {
-    // add hover stats here maybe? ***
-    
+    const stats = getHoverStats(card)
 
-    const cardHTML = `
-    <div data-card-num=${card.cardnumber} class='search-card'>
-    <img class='card-img search-card-img' src='${card.image_url}' alt='${card.name}'
+    return `
+    <div data-card-num=${card.cardnumber} class='search-card mb-4 col-5 col-md-3 col-lg-2' data-bs-toggle="tooltip" title="${stats}">
+    <img class='card-img search-card-img' src='${card.image_url}' alt='${card.name}'/>
     </div>
-    `;
-
-    return cardHTML
+    `
 }
 
 handleSearch = (res) => {
     let cards = res.data
 
-    if (cards.length < 5) {
+    if (cards.length <= 5) {
         cards.forEach(card => {
-            let newCard = $(createCardHTML(card)).attr('style','min-width: 220px')
+            let newCard = $(createCardHTML(card)).attr('style','min-width: 270px')
             $('.list-cards').append(newCard);
         })
     } else {
@@ -161,10 +224,3 @@ handleCardClick = (e) => {
 
     window.location.href = '/cards/' + cardNum
 }
-
-$('#deck-builder-btn').on('click', (e) => {
-    e.preventDefault();
-    $('#pre-DB-content').remove()
-    $('#DB').removeClass('d-none')
-    new Deck(50,5,10,4).startDB()
-})
