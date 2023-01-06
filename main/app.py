@@ -2,8 +2,8 @@ from flask_cors import CORS
 from flask import Flask, redirect, render_template, request, flash, jsonify, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_debugtoolbar import DebugToolbarExtension
-from .models import db, connect_db, User, Card, MainDecklist, EggDecklist, SideDecklist, Deck, SharedDeck, MainDeckCard, EggDeckCard, SideDeckCard, DeckLikes
-from .forms import RegisterForm, LoginForm, EditUserForm,AdvancedSearchForm
+from models import db, connect_db, User, Card, MainDecklist, EggDecklist, SideDecklist, Deck, SharedDeck, MainDeckCard, EggDeckCard, SideDeckCard, DeckLikes
+from forms import RegisterForm, LoginForm, EditUserForm,AdvancedSearchForm
 from sqlalchemy.exc import IntegrityError
 import os
 
