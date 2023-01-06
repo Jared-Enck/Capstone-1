@@ -8,6 +8,9 @@ from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__, instance_relative_config=True)
 
+if __name__ == '__main__':
+    app.run()
+
 app.config.from_pyfile('config.py')
 
 CORS(app)
