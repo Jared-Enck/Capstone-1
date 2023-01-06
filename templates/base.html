@@ -14,7 +14,7 @@
 <body>
     <nav class="navbar navbar-expand-md bg-dark navbar-dark">
         <div class="container-fluid">
-            <a href="/" class="navbar-brand">
+            <a href="{{ url_for('homepage') }}" class="navbar-brand">
             <img src="/static/logo/DCG-Tamer_logo.gif" id="logo" alt="logo">
             <span id="brand">DCG-Tamer</span>
             </a>
@@ -33,17 +33,31 @@
                     <ul class="navbar-nav">
                         {% if current_user.is_authenticated %}
                             <li class="nav-item">
-                                <a href="{{ url_for('user_decks') }}" class="nav-link">Decks</a>
+                                <a href="{{ url_for('user_decks') }}" class="nav-link">
+                                    Decks
+                                </a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ url_for('user_details', user_id=current_user.id) }}" class="nav-link">
                                     {{ current_user.username }}
                                 </a>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('logout') }}">
+                                    Log out
+                                </a>
+                            </li>
                         {% else %}
-                            <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/login">Log in</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('register') }}">
+                                    Register
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('login') }}">
+                                    Log in
+                                </a>
+                            </li>
                         {% endif %}
                     </ul>
                 </div>
