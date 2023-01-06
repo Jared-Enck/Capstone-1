@@ -7,8 +7,9 @@ from forms import RegisterForm, LoginForm, EditUserForm,AdvancedSearchForm
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_object('config')
+
 app.config.from_pyfile('config.py')
+
 CORS(app)
 
 toolbar = DebugToolbarExtension(app)
@@ -40,7 +41,7 @@ def homepage():
     
     return render_template('index.html', shared_decks=shared_decks)
 
-############################
+#############################
 ######## User routes ########
 
 @app.route('/register', methods=['GET','POST'])
@@ -150,7 +151,7 @@ def user_deck_likes(user_id):
     
     return render_template('/user/liked_decks.html', user=user, liked_decks=liked_decks)
     
-############################
+#############################
 ######## Card routes ########
 
 @app.route('/cards/<number>', methods=['GET','PATCH'])
@@ -182,7 +183,7 @@ def adv_search():
     return render_template('/card/adv_search.html',adv_form=adv_form)
 
 
-############################
+#############################
 ######## Deck routes ########
 
 @app.route('/decks', methods=['GET','POST'])
@@ -299,4 +300,3 @@ def liked_deck(deck_id):
     db.session.commit()
     
     return redirect( url_for('show_deck',deck_id=deck_id) )
-
