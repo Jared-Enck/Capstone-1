@@ -44,7 +44,7 @@ $('.results').on('click', 'img', (e) => {
     handleCardClick(e);
 })
 
-$('#clear').on('click', (e) => {
+$('.clear').on('click', (e) => {
     e.preventDefault();
     clearForm();
 })
@@ -140,10 +140,9 @@ showTips = () => {
 }
 
 clearForm = () => {
-    $('option[value=""]').removeAttr('disabled','')
-    $('.list-cards').empty()
     $('input').val('')
-    $('#adv-search').find('select').val('')
+    $('.list-cards').empty()
+    $('.adv-search').find('select').val('')
 }
 
 doLoader = () => {

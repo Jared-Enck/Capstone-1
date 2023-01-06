@@ -21,7 +21,6 @@ class AdvancedSearchForm(FlaskForm):
     color_choices = [('','Select Color'),
                      ('Black','Black'),
                      ('Blue','Blue'),
-                     ('Colorless','Colorless'),
                      ('Green','Green'),
                      ('Purple','Purple'),
                      ('Red','Red'),
