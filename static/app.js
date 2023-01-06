@@ -143,6 +143,7 @@ clearForm = () => {
     $('input').val('')
     $('.list-cards').empty()
     $('.adv-search').find('select').val('')
+    $('input[name=n]').focus()
 }
 
 doLoader = () => {
