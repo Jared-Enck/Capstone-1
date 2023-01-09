@@ -7,6 +7,7 @@ SECRET_KEY_VAL = os.environ.get('SECRET_KEY', 'super_secret_key')
 
 DEBUG = False
 
-SQLALCHEMY_ECHO = False
+if DEBUG:
+    SQLALCHEMY_ECHO = True
 
-DEBUG_TB_INTERCEPT_REDIRECTS = True
+    DEBUG_TB_INTERCEPT_REDIRECTS = True
