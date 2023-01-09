@@ -34,7 +34,7 @@ login_manager.login_view = 'login'
 
 app.jinja_env.globals.update(get_stats=Card.serialize_stats)
 
-@app.route('/home', methods=['GET'])
+@app.route('/', methods=['GET'])
 def homepage():
     """Show homepage."""
         
