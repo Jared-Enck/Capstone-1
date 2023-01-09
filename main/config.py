@@ -1,5 +1,5 @@
 import os
-from instance import secret_keys
+from .instance import secret_keys
 
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql:///DCG_db').replace('://', 'ql://', 1)
 
