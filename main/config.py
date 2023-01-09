@@ -1,9 +1,9 @@
 import os
-from .instance.secret_keys import SECRET_KEY
+from instance import secret_keys
 
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql:///DCG_db').replace('://', 'ql://', 1)
 
-SECRET_KEY_VAL = os.environ.get('SECRET_KEY', SECRET_KEY)
+SECRET_KEY_VAL = os.environ.get('SECRET_KEY', secret_keys.SECRET_KEY)
 
 DEBUG = False
 
