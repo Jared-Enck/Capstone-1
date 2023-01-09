@@ -1,11 +1,5 @@
-import os, sys, inspect
-
-cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
-
-if cmd_folder not in sys.path:
-     sys.path.insert(0, cmd_folder)
-     
-from .instance.secret_keys import SECRET_KEY
+import os     
+from instance.secret_keys import SECRET_KEY
 
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql:///DCG_db').replace('://', 'ql://', 1)
 
