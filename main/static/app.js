@@ -4,10 +4,10 @@ $(document).ready(() => {
     if ($('#username')) {
         $('#username').focus()
     }
-    if (window.location.href == '/cards/advanced') {
+    if ($('#adv-input').length) {
         $('#search-button').addClass('d-none')
     }
-    if (window.location.href == '/decks') {
+    if ($('#decks').length) {
         if (!sessionStorage['tipsClosed']) {
             return showTips()
         }
