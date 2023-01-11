@@ -6,10 +6,7 @@ except:
     
 SECRET_KEY = os.environ.get('SECRET_KEY', SECRET_KEY)
 
-try:
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql:///DCG_db')
-except:
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql:///DCG_db').replace('://', 'ql://', 1)
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql:///DCG_db').replace('://', 'ql://', 1)
 
 DEBUG = False
 
