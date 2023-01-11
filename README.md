@@ -3,7 +3,7 @@
 
 Deployed on Heroku: https://dcg-tamer.herokuapp.com/  
 
-## Description  
+### Description  
 
 A site to look up cards and build decks for the Digimon Card Game series. Which has become a very popular trading card game (TCG) by Bandai, since it's revamp in 2020.  
 
