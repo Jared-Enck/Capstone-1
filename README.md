@@ -9,31 +9,31 @@ A site to look up cards and build decks for the Digimon Card Game series. Which 
 
 # Features  
 
-## Search Cards  
+### Search Cards  
 
 User will be able to search/view cards through regular and advanced search. Advanced search will have filter options.  
 
-## Create Account/Login  
+### Create Account/Login  
 
 Logged in users will have access to the deckbuilder, share deck, and like deck features.  
 
-## Deckbuilder  
+### Deckbuilder  
 
 Here a user can build a deck by using the advanced search to call the API and click to add the cards to their main deck, egg deck, or side decks.
 
 Then name and save the deck.
 
-## Share/Delete  
+### Share/Delete  
 
 Logged in users that own the deck, on the deck details page, can share the deck for all to see or delete their deck.  
 
-## Likes  
+### Likes  
 
 Logged in users that do not own the deck, on the deck details page, can click the like button to add a like to the deck. This will also add the deck to the logged in user's liked decks page.
 
 If already liked, this will remove a like from and remove the deck from the logged in user's liked decks page.  
 
-## Liked Decks  
+### Liked Decks  
 
 On the user profile page, there will be a link to the liked decks. Here a user will see the profile user's liked decks.
 
@@ -59,13 +59,13 @@ Created with Quick DBD.
 
 # Technology Stack
 
-## Front End  
+### Front End  
 
 | HTML5 | CSS | JavaScript | Bootstrap | jQuery |
 | ----- | ----- | ----- | ----- | ----- |
 | ![html5 icon](https://raw.githubusercontent.com/get-icon/geticon/fc0f660daee147afb4a56c64e12bde6486b73e39/icons/html-5.svg) | ![css icon](https://github.com/get-icon/geticon/raw/master/icons/css-3.svg) | ![javascript icon](https://raw.githubusercontent.com/get-icon/geticon/fc0f660daee147afb4a56c64e12bde6486b73e39/icons/javascript.svg) | ![bootstrap icon](https://raw.githubusercontent.com/get-icon/geticon/fc0f660daee147afb4a56c64e12bde6486b73e39/icons/bootstrap.svg) | ![jquery icon](https://raw.githubusercontent.com/get-icon/geticon/fc0f660daee147afb4a56c64e12bde6486b73e39/icons/jquery-icon.svg) |
 
-## Back End
+### Back End
 
 | Python3 | PostgreSQL | Flask |
 | ----- | ----- | ----- |
