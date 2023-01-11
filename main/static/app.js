@@ -205,7 +205,7 @@ createCardHTML = (card) => {
 handleSearch = (res) => {
     let cards = res.data
 
-    if (cards.length <= 5) {
+    if (cards.length <= 6) {
         cards.forEach(card => {
             let newCard = $(createCardHTML(card)).attr('style','min-width: 270px')
             $('.list-cards').append(newCard);
