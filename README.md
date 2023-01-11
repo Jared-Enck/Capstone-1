@@ -41,7 +41,7 @@ On the user profile page, there will be a link to the liked decks. Here a user w
 
 Created with Lucidchart.  
 
-![DCG-Tamer user flow](/DCG-Tamer_user-flow.png)  
+![DCG-Tamer user flow](/proposal/DCG-Tamer_user-flow.png)  
 
 #  API Notes  
 
@@ -55,7 +55,7 @@ It does have a rate limit of fifteen calls per ten seconds. So it was fine for s
 
 Created with Quick DBD.
 
-![DCG-Tamer schema](/DCG_Tamer_schema.png)  
+![DCG-Tamer schema](/proposal/DCG_Tamer_schema.png)  
 
 # Technology Stack
 
