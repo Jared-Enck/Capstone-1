@@ -168,12 +168,6 @@ def show_card(number):
     
     return render_template('/card/card_details.html', card=card, stat_list=stat_list)
 
-@app.route('/adv_search')
-def show_adv_search():
-    """Show adv search page."""
-    
-    return render_template('/search/adv_search.html')
-
 @app.route('/cards/advanced')
 def adv_search():
     """Show adv search html."""
