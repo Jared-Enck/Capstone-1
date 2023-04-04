@@ -1,6 +1,6 @@
 import os
  
-DEBUG = False
+DEBUG = True
 
 try:
     from .instance.secret_keys import SECRET_KEY
